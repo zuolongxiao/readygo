@@ -1,0 +1,25 @@
+[app]
+Name = readygo
+Version = 1.0.0
+PageSize = 20
+JwtSecret = secret
+JwtExpires = 10 # expires in hours
+JwtIssuer = readygo
+RuntimeRootPath = runtime/
+SuperAdminID = 1
+
+[server]
+# debug or release
+RunMode = debug
+HTTPHost = 0.0.0.0
+HTTPPort = 8000
+ReadTimeout = 60
+WriteTimeout = 60
+
+[database]
+Type = mysql
+User = root
+Password = 
+Host = 127.0.0.1:3306
+Name = readygo
+Prefix = g_
