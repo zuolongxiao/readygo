@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zuolongxiao/readygo/models"
-	"github.com/zuolongxiao/readygo/services"
+	"readygo/models"
+	"readygo/services"
 )
 
 // Permission permissions

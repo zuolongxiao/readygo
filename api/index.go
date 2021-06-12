@@ -3,8 +3,9 @@ package api
 import (
 	"net/http"
 
+	"readygo/pkg/settings"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zuolongxiao/readygo/pkg/settings"
 )
 
 // Index index

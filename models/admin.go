@@ -3,9 +3,10 @@ package models
 import (
 	"database/sql"
 
-	"github.com/zuolongxiao/readygo/pkg/errs"
-	"github.com/zuolongxiao/readygo/pkg/global"
-	"github.com/zuolongxiao/readygo/pkg/utils"
+	"readygo/pkg/errs"
+	"readygo/pkg/global"
+	"readygo/pkg/utils"
+
 	"gorm.io/gorm"
 )
 

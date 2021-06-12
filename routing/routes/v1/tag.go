@@ -1,8 +1,8 @@
 package v1
 
 import (
-	apiv1 "github.com/zuolongxiao/readygo/api/v1"
-	"github.com/zuolongxiao/readygo/routing/routes"
+	apiv1 "readygo/api/v1"
+	"readygo/routing/routes"
 )
 
 var tag = []routes.Route{

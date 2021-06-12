@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/zuolongxiao/readygo/commands"
-	"github.com/zuolongxiao/readygo/pkg/jobs"
-	"github.com/zuolongxiao/readygo/pkg/settings"
-	"github.com/zuolongxiao/readygo/pkg/utils"
-	"github.com/zuolongxiao/readygo/routing"
+	"readygo/commands"
+	"readygo/pkg/jobs"
+	"readygo/pkg/settings"
+	"readygo/pkg/utils"
+	"readygo/routing"
 )
 
 func main() {

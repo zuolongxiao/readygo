@@ -6,10 +6,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/zuolongxiao/readygo/models"
-	"github.com/zuolongxiao/readygo/pkg/errs"
-	v1 "github.com/zuolongxiao/readygo/routing/routes/v1"
-	"github.com/zuolongxiao/readygo/services"
+	"readygo/models"
+	"readygo/pkg/errs"
+	v1 "readygo/routing/routes/v1"
+	"readygo/services"
 )
 
 // LoadPermissions load permission into database

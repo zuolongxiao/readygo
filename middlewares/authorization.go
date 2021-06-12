@@ -3,10 +3,11 @@ package middlewares
 import (
 	"strings"
 
+	"readygo/pkg/errs"
+	"readygo/pkg/jobs"
+	"readygo/pkg/utils"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zuolongxiao/readygo/pkg/errs"
-	"github.com/zuolongxiao/readygo/pkg/jobs"
-	"github.com/zuolongxiao/readygo/pkg/utils"
 )
 
 // Authorize check permissions

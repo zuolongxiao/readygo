@@ -42,6 +42,7 @@ type Database struct {
 	Host     string
 	Name     string
 	Prefix   string
+	Charset  string
 }
 
 // DatabaseSetting DatabaseSetting

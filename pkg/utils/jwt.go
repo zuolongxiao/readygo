@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
+	"readygo/pkg/settings"
+
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/zuolongxiao/readygo/pkg/settings"
 )
 
 var jwtSecret = []byte(settings.AppSetting.JwtSecret)

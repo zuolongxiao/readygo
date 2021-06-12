@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/zuolongxiao/readygo/models"
+import "readygo/models"
 
 // RunMigration run migration
 func RunMigration() {

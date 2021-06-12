@@ -1,9 +1,9 @@
 package commands
 
 import (
-	"github.com/zuolongxiao/readygo/models"
-	"github.com/zuolongxiao/readygo/pkg/errs"
-	"github.com/zuolongxiao/readygo/services"
+	"readygo/models"
+	"readygo/pkg/errs"
+	"readygo/services"
 )
 
 // CreateAdmin create an admin

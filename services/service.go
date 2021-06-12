@@ -6,11 +6,12 @@ import (
 	"strconv"
 	"strings"
 
+	"readygo/models"
+	"readygo/pkg/errs"
+	"readygo/pkg/global"
+	"readygo/pkg/utils"
+
 	"github.com/jinzhu/copier"
-	"github.com/zuolongxiao/readygo/models"
-	"github.com/zuolongxiao/readygo/pkg/errs"
-	"github.com/zuolongxiao/readygo/pkg/global"
-	"github.com/zuolongxiao/readygo/pkg/utils"
 	"gorm.io/gorm"
 )
 

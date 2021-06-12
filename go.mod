@@ -1,4 +1,4 @@
-module github.com/zuolongxiao/readygo
+module readygo
 
 go 1.16
 

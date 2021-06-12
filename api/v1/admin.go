@@ -3,12 +3,13 @@ package api
 import (
 	"strconv"
 
+	"readygo/models"
+	"readygo/pkg/errs"
+	"readygo/pkg/settings"
+	"readygo/pkg/utils"
+	"readygo/services"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zuolongxiao/readygo/models"
-	"github.com/zuolongxiao/readygo/pkg/errs"
-	"github.com/zuolongxiao/readygo/pkg/settings"
-	"github.com/zuolongxiao/readygo/pkg/utils"
-	"github.com/zuolongxiao/readygo/services"
 )
 
 // ListAdmins ListAdmins

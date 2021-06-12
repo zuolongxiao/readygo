@@ -1,10 +1,11 @@
 package api
 
 import (
+	"readygo/models"
+	"readygo/pkg/utils"
+	"readygo/services"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zuolongxiao/readygo/models"
-	"github.com/zuolongxiao/readygo/pkg/utils"
-	"github.com/zuolongxiao/readygo/services"
 )
 
 // ListPermissions ListPermissions

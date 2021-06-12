@@ -4,12 +4,13 @@ import (
 	"reflect"
 	"strings"
 
+	"readygo/api"
+	"readygo/pkg/settings"
+	v1 "readygo/routing/routes/v1"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
-	"github.com/zuolongxiao/readygo/api"
-	"github.com/zuolongxiao/readygo/pkg/settings"
-	v1 "github.com/zuolongxiao/readygo/routing/routes/v1"
 )
 
 // Setup setup router

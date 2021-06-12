@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"readygo/pkg/errs"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/zuolongxiao/readygo/pkg/errs"
 )
 
 const (

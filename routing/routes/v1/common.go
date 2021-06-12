@@ -1,9 +1,10 @@
 package v1
 
 import (
+	"readygo/middlewares"
+	"readygo/routing/routes"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zuolongxiao/readygo/middlewares"
-	"github.com/zuolongxiao/readygo/routing/routes"
 )
 
 // Prefix route prefix

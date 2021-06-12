@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/zuolongxiao/readygo/pkg/errs"
-	"github.com/zuolongxiao/readygo/pkg/global"
+	"readygo/pkg/errs"
+	"readygo/pkg/global"
+
 	"gorm.io/gorm"
 )
 

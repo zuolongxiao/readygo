@@ -1,9 +1,10 @@
 package middlewares
 
 import (
+	"readygo/pkg/errs"
+	"readygo/pkg/utils"
+
 	"github.com/gin-gonic/gin"
-	"github.com/zuolongxiao/readygo/pkg/errs"
-	"github.com/zuolongxiao/readygo/pkg/utils"
 )
 
 // TokenType Authorization token type
