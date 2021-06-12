@@ -226,13 +226,13 @@ func (s *Base) Create() error {
 	return models.DB.Create(s.model).Error
 }
 
-// Update Update
-func (s *Base) Update() error {
+// Save Save
+func (s *Base) Save() error {
 	return models.DB.Updates(s.model).Error
 }
 
-// Save Save
-func (s *Base) Save(query interface{}, args ...interface{}) error {
+// Update Update
+func (s *Base) Update(query interface{}, args ...interface{}) error {
 	return models.DB.Select(query, args...).UpdateColumns(s.model).Error
 }
 

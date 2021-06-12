@@ -89,7 +89,7 @@ func Auth(c *gin.Context) {
 		Time:  time.Now(),
 		Valid: true,
 	}
-	_ = s.Save("LastLoginIP", "LastLoginAt")
+	_ = s.Update("LastLoginIP", "LastLoginAt")
 
 	data := make(map[string]interface{})
 	data["token"] = token

@@ -247,7 +247,7 @@ func UpdateTag(c *gin.Context) {
 
 	// 对 model 设置额外信息，并更新到数据库
 	m.UpdatedBy = w.GetUsername()
-	if err := s.Update(); err != nil {
+	if err := s.Save(); err != nil {
 		w.Respond(err, nil)
 		return
 	}

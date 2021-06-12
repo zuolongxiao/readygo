@@ -91,7 +91,7 @@ func UpdateAdmin(c *gin.Context) {
 	}
 
 	m.UpdatedBy = w.GetUsername()
-	if err := s.Update(); err != nil {
+	if err := s.Save(); err != nil {
 		w.Respond(err, nil)
 		return
 	}
