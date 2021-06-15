@@ -14,14 +14,14 @@ type Base struct {
 	UpdatedBy string       `gorm:"type:string;size:100;not null"`
 }
 
+// Size implements services.Pager
+func (*Base) Size() int {
+	return 20
+}
+
 // BaseView base view
 type BaseView struct {
 	ID        uint64    `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-}
-
-// Size implements services.Pager
-func (*Base) Size() int {
-	return 20
 }
