@@ -6,7 +6,7 @@ import (
 
 	"readygo/pkg/settings"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt/v4"
 )
 
 var jwtSecret = []byte(settings.AppSetting.JwtSecret)
@@ -17,7 +17,7 @@ var jwtIssuer = settings.AppSetting.JwtIssuer
 type Claims struct {
 	Username    string   `json:"usr"`
 	Permissions []string `json:"perms"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 // GenerateToken generate JWT token
@@ -28,8 +28,8 @@ func GenerateToken(username string, permissions []string) (string, error) {
 	claims := Claims{
 		username,
 		permissions,
-		jwt.StandardClaims{
-			ExpiresAt: expireTime.Unix(),
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expireTime),
 			Issuer:    jwtIssuer,
 		},
 	}
