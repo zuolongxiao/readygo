@@ -1,19 +1,40 @@
-package commands
+package cmd
 
 import (
 	"fmt"
+	"readygo/models"
+	"readygo/pkg/db"
+	"readygo/pkg/errs"
+	v1 "readygo/routing/routes/v1"
+	"readygo/services"
 	"reflect"
 	"runtime"
 	"strings"
 
-	"readygo/models"
-	"readygo/pkg/errs"
-	v1 "readygo/routing/routes/v1"
-	"readygo/services"
+	"github.com/spf13/cobra"
 )
 
-// LoadPermissions load permission into database
-func LoadPermissions() {
+// 导入权限
+// go run main.go admin permission
+var adminPermissionCmd = &cobra.Command{
+	Use:   "permission",
+	Short: "Load permissions to database",
+	Long:  `Load permissions to database`,
+	Run: func(cmd *cobra.Command, args []string) {
+		loadPermissions()
+	},
+}
+
+func init() {
+	adminCmd.AddCommand(adminPermissionCmd)
+}
+
+func loadPermissions() {
+	if err := db.Setup(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	for _, v := range v1.Routes {
 		handler := runtime.FuncForPC(reflect.ValueOf(v.Handler).Pointer()).Name()
 		tmp := strings.Split(handler, ".")

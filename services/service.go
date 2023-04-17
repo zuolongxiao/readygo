@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"readygo/models"
+	"readygo/pkg/db"
 	"readygo/pkg/errs"
 	"readygo/pkg/global"
-	"readygo/pkg/utils"
+	"readygo/utils"
 
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
@@ -79,11 +79,16 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 		size = maxSize
 	}
 
-	db := models.DB.Session(&gorm.Session{})
+	db := db.DB.Session(&gorm.Session{})
 
 	if offset > 0 {
 		where := "id " + op + " ?"
 		db = db.Where(where, offset)
+	}
+
+	if IDs := c.Query("IDs"); IDs != "" {
+		ids := strings.Split(IDs, ",")
+		db = db.Where("id IN ?", ids)
 	}
 
 	if f, ok := s.model.(Filterer); ok {
@@ -106,8 +111,8 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 }
 
 // Get get row
-func (s *Base) Get(o interface{}, conds interface{}) error {
-	err := models.DB.Model(s.model).Where(conds).First(o).Error
+func (s *Base) Get(o interface{}, cond interface{}) error {
+	err := db.DB.Model(s.model).Where(cond).First(o).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		typ := s.getTypeName()
 		return errs.NotFoundError(typ)
@@ -121,8 +126,8 @@ func (s *Base) Get(o interface{}, conds interface{}) error {
 }
 
 // GetRows get rows
-func (s *Base) GetRows(o interface{}, conds interface{}) error {
-	err := models.DB.Model(s.model).Where(conds).Find(o).Error
+func (s *Base) GetRows(o interface{}, cond interface{}) error {
+	err := db.DB.Model(s.model).Where(cond).Find(o).Error
 	if err != nil {
 		return errs.DBError(err.Error())
 	}
@@ -137,7 +142,7 @@ func (s *Base) GetByID(o interface{}, vs string) error {
 		return errs.ValidationError("invalid ID")
 	}
 
-	err := models.DB.Model(s.model).Where("id = ?", id).First(o).Error
+	err := db.DB.Model(s.model).Where("id = ?", id).First(o).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		typ := s.getTypeName()
 		return errs.NotFoundError(typ)
@@ -153,7 +158,7 @@ func (s *Base) GetByID(o interface{}, vs string) error {
 // GetByKey GetByKey
 func (s *Base) GetByKey(o interface{}, k string, v interface{}) error {
 	where := k + " = ?"
-	err := models.DB.Model(s.model).Where(where, v).First(o).Error
+	err := db.DB.Model(s.model).Where(where, v).First(o).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		typ := s.getTypeName()
 		return errs.NotFoundError(typ)
@@ -168,7 +173,7 @@ func (s *Base) GetByKey(o interface{}, k string, v interface{}) error {
 
 // Load get and fill the model
 func (s *Base) Load() error {
-	err := models.DB.Model(s.model).Where(s.model).Take(s.model).Error
+	err := db.DB.Model(s.model).Where(s.model).Take(s.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		typ := s.getTypeName()
 		return errs.NotFoundError(typ)
@@ -188,7 +193,7 @@ func (s *Base) LoadByID(vs string) error {
 		return errs.ValidationError("invalid ID")
 	}
 
-	err := models.DB.Model(s.model).Where("id = ?", id).First(s.model).Error
+	err := db.DB.Model(s.model).Where("id = ?", id).First(s.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		typ := s.getTypeName()
 		return errs.NotFoundError(typ)
@@ -204,7 +209,7 @@ func (s *Base) LoadByID(vs string) error {
 // LoadByKey LoadByKey
 func (s *Base) LoadByKey(key string, v interface{}) error {
 	where := key + " = ?"
-	err := models.DB.Model(s.model).Where(where, v).First(s.model).Error
+	err := db.DB.Model(s.model).Where(where, v).First(s.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		typ := s.getTypeName()
 		return errs.NotFoundError(typ)
@@ -224,22 +229,22 @@ func (s *Base) Fill(o interface{}) error {
 
 // Create Create
 func (s *Base) Create() error {
-	return models.DB.Create(s.model).Error
+	return db.DB.Create(s.model).Error
 }
 
 // Save Save
 func (s *Base) Save() error {
-	return models.DB.Updates(s.model).Error
+	return db.DB.Updates(s.model).Error
 }
 
 // Update Update
 func (s *Base) Update(query interface{}, args ...interface{}) error {
-	return models.DB.Select(query, args...).UpdateColumns(s.model).Error
+	return db.DB.Select(query, args...).UpdateColumns(s.model).Error
 }
 
 // Delete delete from database and destory the model
 func (s *Base) Delete() error {
-	err := models.DB.Delete(s.model).Error
+	err := db.DB.Delete(s.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		typ := s.getTypeName()
 		return errs.NotFoundError(typ)

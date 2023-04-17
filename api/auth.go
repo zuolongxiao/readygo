@@ -8,8 +8,8 @@ import (
 	"readygo/models"
 	"readygo/pkg/errs"
 	"readygo/pkg/settings"
-	"readygo/pkg/utils"
 	"readygo/services"
+	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,12 +28,13 @@ func Auth(c *gin.Context) {
 	admin := models.Admin{}
 	s := services.New(&admin)
 	if err := s.LoadByKey("username", au.Username); err != nil {
-		w.Respond(err, nil)
+		// w.Respond(err, nil)
+		w.Respond(errs.ValidationError("incorrect username or password"), nil)
 		return
 	}
 
 	if !utils.VerifyPassword(admin.Password, au.Password) {
-		w.Respond(errs.ValidationError("incorrect password"), nil)
+		w.Respond(errs.ValidationError("incorrect username or password"), nil)
 		return
 	}
 
@@ -42,9 +43,9 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	permisions := make([]string, 0, 10)
-	if admin.ID == settings.AppSetting.SuperAdminID {
-		permisions = append(permisions, "*")
+	permissions := make([]string, 0, 10)
+	if admin.ID == settings.App.SuperAdminID {
+		permissions = append(permissions, "*")
 	} else {
 		if admin.RoleID > 0 {
 			ao := []models.AuthorizationPermission{}
@@ -72,14 +73,14 @@ func Auth(c *gin.Context) {
 				}
 				for _, v := range po {
 					if v.IsEnabled == "Y" {
-						permisions = append(permisions, v.Name)
+						permissions = append(permissions, v.Name)
 					}
 				}
 			}
 		}
 	}
 
-	token, err := utils.GenerateToken(admin.Username, permisions)
+	token, err := utils.GenerateToken(admin.Username, permissions)
 	if err != nil {
 		w.Respond(errs.InternalServerError(err.Error()), nil)
 		return

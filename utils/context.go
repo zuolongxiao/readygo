@@ -111,8 +111,8 @@ func (w *ContextWrapper) Bind(o interface{}) error {
 	if err := w.ctx.ShouldBindJSON(o); err != nil {
 		var verr validator.ValidationErrors
 		if errors.As(err, &verr) {
-			for _, f := range verr {
-				var errmsg string
+			var errmsg string
+			for i, f := range verr {
 				tag := f.ActualTag()
 				field := f.Field()
 				param := f.Param()
@@ -133,9 +133,11 @@ func (w *ContextWrapper) Bind(o interface{}) error {
 				default:
 					errmsg = fmt.Sprintf("%s is invalid", field)
 				}
-
-				return errs.ValidationError(errmsg)
+				if i == 0 {
+					break
+				}
 			}
+			return errs.ValidationError(errmsg)
 		} else {
 			return errs.BadRequestError("")
 		}

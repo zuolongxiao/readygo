@@ -5,8 +5,8 @@ import (
 
 	"readygo/models"
 	"readygo/pkg/errs"
-	"readygo/pkg/utils"
 	"readygo/services"
+	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
 )

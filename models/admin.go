@@ -5,7 +5,7 @@ import (
 
 	"readygo/pkg/errs"
 	"readygo/pkg/global"
-	"readygo/pkg/utils"
+	"readygo/utils"
 
 	"gorm.io/gorm"
 )
@@ -100,7 +100,7 @@ func (m *Admin) BeforeSave(tx *gorm.DB) error {
 }
 
 // Filter filter
-func (*Admin) Filter(db *gorm.DB, c global.Queryer) *gorm.DB {
+func (m *Admin) Filter(db *gorm.DB, c global.Queryer) *gorm.DB {
 	if username := c.Query("username"); username != "" {
 		db = db.Where("username LIKE ?", username+"%")
 	}

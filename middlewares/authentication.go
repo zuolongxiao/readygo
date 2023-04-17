@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"readygo/pkg/errs"
-	"readygo/pkg/utils"
+	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
 )

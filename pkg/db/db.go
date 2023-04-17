@@ -1,4 +1,4 @@
-package models
+package db
 
 import (
 	"fmt"
@@ -17,20 +17,22 @@ import (
 // DB database
 var DB *gorm.DB
 
-func init() {
+func Setup() error {
+	// log.Println("Setup DB")
 	var err error
 
-	dialector := mysql.Open(
-		fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=True&loc=Local",
-			settings.DatabaseSetting.User,
-			settings.DatabaseSetting.Password,
-			settings.DatabaseSetting.Host,
-			settings.DatabaseSetting.Name,
-			settings.DatabaseSetting.Charset,
-		))
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
+		settings.Database.User,
+		settings.Database.Password,
+		settings.Database.Host,
+		settings.Database.Port,
+		settings.Database.Name,
+		settings.Database.Charset,
+	)
+	dialector := mysql.Open(dsn)
 
 	logLevel := logger.Silent
-	if settings.ServerSetting.RunMode == "debug" {
+	if settings.Gin.Mode == "debug" {
 		logLevel = logger.Info
 	}
 	consoleLogger := logger.New(
@@ -44,20 +46,23 @@ func init() {
 
 	config := gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   settings.DatabaseSetting.Prefix,
+			TablePrefix:   settings.Database.Prefix,
 			SingularTable: true,
 		},
 		Logger: consoleLogger,
 	}
 
 	DB, err = gorm.Open(dialector, &config)
-
 	if err != nil {
 		log.Println(err)
+		return err
 	}
 
+	// Connection Pool setting
 	sqlDB, _ := DB.DB()
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetConnMaxLifetime(time.Hour)
+	sqlDB.SetMaxIdleConns(settings.Database.MaxIdleConns)
+	sqlDB.SetMaxOpenConns(settings.Database.MaxOpenConns)
+	sqlDB.SetConnMaxLifetime(settings.Database.ConnMaxLifetime)
+
+	return nil
 }

@@ -24,14 +24,13 @@ func Setup() *gin.Engine {
 			return name
 		})
 	}
+	gin.SetMode(settings.Gin.Mode)
 
 	r := gin.New()
 
 	r.Use(gin.Logger())
 
 	r.Use(gin.Recovery())
-
-	gin.SetMode(settings.ServerSetting.RunMode)
 
 	r.GET("/api", api.Index)
 

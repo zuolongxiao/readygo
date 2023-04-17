@@ -2,8 +2,8 @@ package api
 
 import (
 	"readygo/models"
-	"readygo/pkg/utils"
 	"readygo/services"
+	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
 )

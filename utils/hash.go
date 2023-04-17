@@ -18,9 +18,5 @@ func VerifyPassword(hashedPwd, plainPwd string) bool {
 	byteHashed := []byte(hashedPwd)
 	bytePlain := []byte(plainPwd)
 	err := bcrypt.CompareHashAndPassword(byteHashed, bytePlain)
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }

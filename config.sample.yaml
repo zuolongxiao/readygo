@@ -1,0 +1,35 @@
+# 配置文件, 可以通过设置环境变量来覆盖配置项
+# 例如: Server.HTTPPort 设置对应的环境变量为: export SERVER_HTTPPORT=9331
+
+App:
+  Name: readygo
+  PageSize: 20
+  RuntimeRootPath: runtime/
+  SuperAdminID: 1
+
+Gin:
+  Mode: debug # debug or release
+
+JWT:
+  Secret:
+  Expires: 24 # hours
+  Issuer: readygo
+
+Server:
+  HTTPHost: 127.0.0.1
+  HTTPPort: 9331
+  ReadTimeout: 60 # seconds
+  WriteTimeOut: 60 # seconds
+
+Database:
+  Type: MySQL
+  Host: 127.0.0.1
+  Port: 3306
+  User: root
+  Password:
+  Name: readygo
+  Prefix: g_
+  Charset: utf8mb4
+  MaxIdleConns: 10
+  MaxOpenConns: 100
+  ConnMaxLifetime: 3000 # seconds

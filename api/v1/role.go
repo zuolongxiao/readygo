@@ -7,60 +7,60 @@ import (
 
 	"readygo/models"
 	"readygo/pkg/errs"
-	"readygo/pkg/utils"
 	"readygo/services"
+	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 // ListRoles list roles
-func ListRoles(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
-	s := services.New(&models.Role{})
+func ListRoles(ctx *gin.Context) {
+	cw := utils.NewContextWrapper(ctx)
+	svc := services.New(&models.Role{})
 
 	var list []models.RoleView
-	if err := s.Find(&list, c); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Find(&list, ctx); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	data := map[string]interface{}{
 		"list":   list,
-		"offset": s.GetOffset(),
+		"offset": svc.GetOffset(),
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }
 
 // CreateRole create role
-func CreateRole(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+func CreateRole(ctx *gin.Context) {
+	cw := utils.NewContextWrapper(ctx)
 
 	binding := models.RoleCreate{}
-	if err := w.Bind(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := cw.Bind(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	var m models.Role
-	s := services.New(&m)
+	var mdl models.Role
+	s := services.New(&mdl)
 	if err := s.Fill(&binding); err != nil {
-		w.Respond(err, nil)
+		cw.Respond(err, nil)
 		return
 	}
 
-	m.CreatedBy = w.GetUsername()
+	mdl.CreatedBy = cw.GetUsername()
 	if err := s.Create(); err != nil {
-		w.Respond(err, nil)
+		cw.Respond(err, nil)
 		return
 	}
 
 	data := map[string]interface{}{
-		"id":         m.ID,
-		"created_at": m.CreatedAt.Time,
+		"id":         mdl.ID,
+		"created_at": mdl.CreatedAt.Time,
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }
 
 // UpdateRole update role

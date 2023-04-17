@@ -6,8 +6,8 @@ import (
 	"readygo/models"
 	"readygo/pkg/errs"
 	"readygo/pkg/settings"
-	"readygo/pkg/utils"
 	"readygo/services"
+	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,12 +23,24 @@ func ListAdmins(c *gin.Context) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"list":   list,
+	// roleIDsQueryer := models.IDsQueryer{
+	// 	List: list,
+	// 	Key:  "RoleID",
+	// }
+	// roleSvc := services.New(&models.Role{})
+	// var roleList []models.RoleView
+	// if err := roleSvc.Find(&roleList, &roleIDsQueryer); err != nil {
+	// 	w.Respond(err, nil)
+	// 	return
+	// }
+
+	resp := map[string]interface{}{
+		"list": list,
+		// "roleList": roleList,
 		"offset": s.GetOffset(),
 	}
 
-	w.Respond(nil, data)
+	w.Respond(nil, resp)
 }
 
 // CreateAdmin CreateAdmin
@@ -74,7 +86,7 @@ func UpdateAdmin(c *gin.Context) {
 	}
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 0)
-	if id == settings.AppSetting.SuperAdminID {
+	if id == settings.App.SuperAdminID {
 		w.Respond(errs.ForbiddenError("super admin cannot be modified"), nil)
 		return
 	}
@@ -110,7 +122,7 @@ func DeleteAdmin(c *gin.Context) {
 	w := utils.NewContextWrapper(c)
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 0)
-	if id == settings.AppSetting.SuperAdminID {
+	if id == settings.App.SuperAdminID {
 		w.Respond(errs.ForbiddenError("super admin cannot be deleted"), nil)
 		return
 	}

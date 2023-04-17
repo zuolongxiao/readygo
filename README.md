@@ -29,20 +29,18 @@ cd readygo
 go mod tidy
 ```
 
-1. 修改配置文件
+1. 修改配置文件（或者通过环境变量设置）
 
 ```bash
-cp conf/app.ini.sample conf/app.ini
-vi conf/app.ini
+cp config.sample.yaml config.yaml
+vi config.yaml
 # 修改以下配置项:
-# [app]
-# JwtSecret = secret
+# JWT.Secret: "your secret"
 
-# [database]
-# User = root
-# Password =
-# Host = 127.0.0.1:3306
-# Name = readygo
+# Database.Host: 127.0.0.1
+# Database.Port: 3306
+# Database.Password: your password
+# Database.Name = readygo
 ```
 
 1. 创建数据库
@@ -55,19 +53,19 @@ mysql -h127.0.0.1 -P3306 -uroot -p -e "create database readygo"
 
 ```bash
 # 迁移数据库
-go run main.go migration:run
+go run main.go admin migrate
 
 # 导入权限
-go run main.go permission:load
+go run main.go admin permission
 
 # 创建超级用户,不指定-p则生成随机密码
-go run main.go admin:create -u root -p yourpassword
+go run main.go admin create -u root -p yourpassword
 ```
 
 1. 启动服务
 
 ```bash
-go run main.go http:start
+go run main.go serve
 ```
 
 1. 测试
