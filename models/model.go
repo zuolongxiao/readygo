@@ -60,3 +60,13 @@ func (q *IDsQueryer) Query(s string) string {
 
 	return strings.Join(ids, ",")
 }
+
+// KeyValueQueryer
+type KeyValueQueryer struct {
+	Entries map[string]string
+}
+
+// Query implements global.queryer
+func (q *KeyValueQueryer) Query(k string) string {
+	return q.Entries[k]
+}

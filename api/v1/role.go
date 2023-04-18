@@ -1,8 +1,6 @@
 package api
 
 import (
-	"fmt"
-	"net/url"
 	"strconv"
 
 	"readygo/models"
@@ -11,6 +9,7 @@ import (
 	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 )
 
 // ListRoles list roles
@@ -127,24 +126,56 @@ func ListRolePermissions(c *gin.Context) {
 		return
 	}
 
-	q, err := url.ParseQuery(c.Request.URL.RawQuery)
-	if err != nil {
-		w.Respond(errs.BadRequestError(""), nil)
-		return
-	}
-	q.Set("role_id", fmt.Sprint(roleID))
-	c.Request.URL.RawQuery = q.Encode()
-
-	s := services.New(&models.Authorization{})
-	var list []models.AuthorizationView
-	if err := s.Find(&list, c); err != nil {
+	roleModel := models.Role{}
+	roleSvc := services.New(&roleModel)
+	if err := roleSvc.LoadByID(c.Param("id")); err != nil {
 		w.Respond(err, nil)
 		return
 	}
 
+	kvQueryer := models.KeyValueQueryer{
+		Entries: map[string]string{
+			"role_id": c.Param("id"),
+		},
+	}
+	svc := services.New(&models.Authorization{})
+	var rolePermList []models.AuthorizationView
+	if err := svc.Find(&rolePermList, &kvQueryer); err != nil {
+		w.Respond(err, nil)
+		return
+	}
+
+	permIDsQueryer := models.IDsQueryer{
+		List: rolePermList,
+		Key:  "PermissionID",
+	}
+	permSvc := services.New(&models.Permission{})
+	var permList []models.RoleView
+	if err := permSvc.Find(&permList, &permIDsQueryer); err != nil {
+		w.Respond(err, nil)
+		return
+	}
+	permNameDict := make(map[uint64]string)
+	for _, perm := range permList {
+		permNameDict[perm.ID] = perm.Name
+	}
+	type List struct {
+		models.AuthorizationView
+		RoleName       string `json:"role_name"`
+		PermissionName string `json:"permission_name"`
+	}
+	var lst []List
+	for _, row := range rolePermList {
+		dst := List{}
+		copier.CopyWithOption(&dst, row, copier.Option{IgnoreEmpty: true})
+		dst.PermissionName = permNameDict[row.PermissionID]
+		dst.RoleName = roleModel.Name
+		lst = append(lst, dst)
+	}
+
 	data := map[string]interface{}{
-		"list":   list,
-		"offset": s.GetOffset(),
+		"list":   lst,
+		"offset": svc.GetOffset(),
 	}
 
 	w.Respond(nil, data)

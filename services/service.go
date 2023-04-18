@@ -242,7 +242,7 @@ func (s *Base) Update(query interface{}, args ...interface{}) error {
 	return db.DB.Select(query, args...).UpdateColumns(s.model).Error
 }
 
-// Delete delete from database and destory the model
+// Delete delete from database and destroy the model
 func (s *Base) Delete() error {
 	err := db.DB.Delete(s.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {

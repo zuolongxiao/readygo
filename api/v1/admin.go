@@ -10,6 +10,7 @@ import (
 	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 )
 
 // ListAdmins ListAdmins
@@ -17,26 +18,42 @@ func ListAdmins(c *gin.Context) {
 	w := utils.NewContextWrapper(c)
 	s := services.New(&models.Admin{})
 
-	var list []models.AdminView
-	if err := s.Find(&list, c); err != nil {
+	var aminList []models.AdminView
+	if err := s.Find(&aminList, c); err != nil {
 		w.Respond(err, nil)
 		return
 	}
 
-	// roleIDsQueryer := models.IDsQueryer{
-	// 	List: list,
-	// 	Key:  "RoleID",
-	// }
-	// roleSvc := services.New(&models.Role{})
-	// var roleList []models.RoleView
-	// if err := roleSvc.Find(&roleList, &roleIDsQueryer); err != nil {
-	// 	w.Respond(err, nil)
-	// 	return
-	// }
+	roleIDsQueryer := models.IDsQueryer{
+		List: aminList,
+		Key:  "RoleID",
+	}
+	roleSvc := services.New(&models.Role{})
+	var roleList []models.RoleView
+	if err := roleSvc.Find(&roleList, &roleIDsQueryer); err != nil {
+		w.Respond(err, nil)
+		return
+	}
+
+	roleNameDict := make(map[uint64]string)
+	for _, role := range roleList {
+		roleNameDict[role.ID] = role.Name
+	}
+
+	type List struct {
+		models.AdminView
+		RoleName string `json:"role_name"`
+	}
+	var lst []List
+	for _, row := range aminList {
+		dst := List{}
+		copier.CopyWithOption(&dst, row, copier.Option{IgnoreEmpty: true})
+		dst.RoleName = roleNameDict[row.RoleID]
+		lst = append(lst, dst)
+	}
 
 	resp := map[string]interface{}{
-		"list": list,
-		// "roleList": roleList,
+		"list":   lst,
 		"offset": s.GetOffset(),
 	}
 
