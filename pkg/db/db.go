@@ -8,6 +8,7 @@ import (
 
 	"readygo/pkg/settings"
 
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -18,12 +19,20 @@ import (
 // DB database
 var DB *gorm.DB
 
+// Redis client
+var RDB *redis.Client
+
 func Setup() error {
-	if settings.Database.Type == "MySQL" {
-		return setupMysql()
+	if settings.Redis.Enabled {
+		if err := setupRedis(); err != nil {
+			return err
+		}
 	}
 
-	if settings.Database.Type == "SQLite" {
+	switch settings.Database.Type {
+	case "MySQL":
+		return setupMysql()
+	case "SQLite":
 		return setupSqlite()
 	}
 
@@ -104,4 +113,14 @@ func setupSqlite() error {
 	DB, err = gorm.Open(sqlite.Open(settings.SQLite.Name), &config)
 
 	return err
+}
+
+func setupRedis() error {
+	RDB = redis.NewClient(&redis.Options{
+		Addr:     settings.Redis.Addr,
+		Password: settings.Redis.Addr,
+		DB:       settings.Redis.DB,
+	})
+
+	return nil
 }

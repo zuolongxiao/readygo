@@ -61,6 +61,14 @@ var SQLite struct {
 	Name string
 }
 
+// Redis
+var Redis struct {
+	Enabled  bool
+	Addr     string
+	Password string
+	DB       int
+}
+
 // Load initialize the configuration instance
 func Load() {
 	// log.Println("settings.Load")
@@ -104,7 +112,6 @@ func Load() {
 	viper.SetDefault("MySQL.Port", "3306")
 	viper.SetDefault("MySQL.User", "root")
 	viper.SetDefault("MySQL.Name", "readygo")
-
 	viper.SetDefault("MySQL.Charset", "utf8mb4")
 	viper.SetDefault("MySQL.MaxIdleConns", "10")
 	viper.SetDefault("MySQL.MaxOpenConns", "100")
@@ -121,4 +128,12 @@ func Load() {
 
 	viper.SetDefault("SQLite.Name", "db.sqlite")
 	SQLite.Name = viper.GetString("SQLite.Name")
+
+	viper.SetDefault("Redis.Enabled", "0")
+	viper.SetDefault("Redis.Addr", "127.0.0.1:6379")
+	viper.SetDefault("Redis.DB", "0")
+	Redis.Enabled = viper.GetBool("Redis.Enabled")
+	Redis.Addr = viper.GetString("Redis.Addr")
+	Redis.Password = viper.GetString("Redis.Password")
+	Redis.DB = viper.GetInt("Redis.DB")
 }
