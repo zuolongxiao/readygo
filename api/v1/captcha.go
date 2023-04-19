@@ -25,8 +25,8 @@ func GenerateCaptcha(c *gin.Context) {
 		return
 	}
 	data := map[string]interface{}{
-		"data":      b64s,
-		"captchaId": id,
+		"data": b64s,
+		"id":   id,
 	}
 	cw.Respond(nil, data)
 }

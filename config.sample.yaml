@@ -22,14 +22,19 @@ Server:
   WriteTimeOut: 60 # seconds
 
 Database:
-  Type: MySQL
+  Type: MySQL # MySQL or SQLite
+  Prefix: g_
+
+MySQL:
   Host: 127.0.0.1
   Port: 3306
   User: root
   Password:
   Name: readygo
-  Prefix: g_
   Charset: utf8mb4
   MaxIdleConns: 10
   MaxOpenConns: 100
   ConnMaxLifetime: 3000 # seconds
+
+SQLite:
+  Name: db.sqlite

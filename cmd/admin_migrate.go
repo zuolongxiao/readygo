@@ -35,4 +35,6 @@ func migrate() {
 		&models.Permission{},
 		&models.Role{},
 	)
+
+	fmt.Println("done")
 }

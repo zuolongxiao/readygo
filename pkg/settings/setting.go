@@ -39,17 +39,26 @@ var Server struct {
 
 // Database
 var Database struct {
-	Type            string
+	Type   string
+	Prefix string
+}
+
+// MySQL
+var MySQL struct {
 	User            string
 	Password        string
 	Host            string
 	Port            uint32
 	Name            string
-	Prefix          string
 	Charset         string
 	MaxIdleConns    int
 	MaxOpenConns    int
 	ConnMaxLifetime time.Duration
+}
+
+// SQLite
+var SQLite struct {
+	Name string
 }
 
 // Load initialize the configuration instance
@@ -87,24 +96,29 @@ func Load() {
 	Server.WriteTimeout = time.Duration(viper.GetUint64("Server.WriteTimeout")) * time.Second
 
 	viper.SetDefault("Database.Type", "MySQL")
-	viper.SetDefault("Database.Host", "127.0.0.1")
-	viper.SetDefault("Database.Port", "3306")
-	viper.SetDefault("Database.User", "root")
-	viper.SetDefault("Database.Name", "readygo")
 	viper.SetDefault("Database.Prefix", "g_")
-	viper.SetDefault("Database.Charset", "utf8mb4")
-	viper.SetDefault("Database.MaxIdleConns", "10")
-	viper.SetDefault("Database.MaxOpenConns", "100")
-	viper.SetDefault("Database.ConnMaxLifetime", "3600")
 	Database.Type = viper.GetString("Database.Type")
-	Database.Host = viper.GetString("Database.Host")
-	Database.Port = viper.GetUint32("Database.Port")
-	Database.User = viper.GetString("Database.User")
-	Database.Password = viper.GetString("Database.Password")
-	Database.Name = viper.GetString("Database.Name")
 	Database.Prefix = viper.GetString("Database.Prefix")
-	Database.Charset = viper.GetString("Database.Charset")
-	Database.MaxIdleConns = viper.GetInt("Database.MaxIdleConns")
-	Database.MaxOpenConns = viper.GetInt("Database.MaxOpenConns")
-	Database.ConnMaxLifetime = time.Duration(viper.GetUint64("Database.ConnMaxLifetime")) * time.Second
+
+	viper.SetDefault("MySQL.Host", "127.0.0.1")
+	viper.SetDefault("MySQL.Port", "3306")
+	viper.SetDefault("MySQL.User", "root")
+	viper.SetDefault("MySQL.Name", "readygo")
+
+	viper.SetDefault("MySQL.Charset", "utf8mb4")
+	viper.SetDefault("MySQL.MaxIdleConns", "10")
+	viper.SetDefault("MySQL.MaxOpenConns", "100")
+	viper.SetDefault("MySQL.ConnMaxLifetime", "3600")
+	MySQL.Host = viper.GetString("Database.Host")
+	MySQL.Port = viper.GetUint32("Database.Port")
+	MySQL.User = viper.GetString("Database.User")
+	MySQL.Password = viper.GetString("Database.Password")
+	MySQL.Name = viper.GetString("Database.Name")
+	MySQL.Charset = viper.GetString("Database.Charset")
+	MySQL.MaxIdleConns = viper.GetInt("Database.MaxIdleConns")
+	MySQL.MaxOpenConns = viper.GetInt("Database.MaxOpenConns")
+	MySQL.ConnMaxLifetime = time.Duration(viper.GetUint64("Database.ConnMaxLifetime")) * time.Second
+
+	viper.SetDefault("SQLite.Name", "db.sqlite")
+	SQLite.Name = viper.GetString("SQLite.Name")
 }

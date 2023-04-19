@@ -72,4 +72,6 @@ func loadPermissions() {
 			fmt.Printf("name: %s, exists, skip\n", name)
 		}
 	}
+
+	fmt.Println("done")
 }
