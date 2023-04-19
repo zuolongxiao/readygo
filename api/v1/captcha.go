@@ -1,13 +1,15 @@
 package api
 
 import (
+	"readygo/pkg/db"
 	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
 )
 
-var captchaStore = base64Captcha.DefaultMemStore
+// var captchaStore = base64Captcha.DefaultMemStore
+var captchaStore = db.RedisCaptchaStore{}
 
 // GenerateCaptcha
 func GenerateCaptcha(c *gin.Context) {
