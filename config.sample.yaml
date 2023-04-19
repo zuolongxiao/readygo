@@ -51,3 +51,5 @@ Captcha:
   Height: 40
   Width: 100
   Length: 6
+  Prefix: captcha_
+  Expires: 600 # seconds

@@ -76,6 +76,8 @@ var Captcha struct {
 	Height  int
 	Width   int
 	Length  int
+	Prefix  string
+	Expires time.Duration
 }
 
 // Load initialize the configuration instance
@@ -151,9 +153,13 @@ func Load() {
 	viper.SetDefault("Captcha.Height", "40")
 	viper.SetDefault("Captcha.Width", "100")
 	viper.SetDefault("Captcha.Length", "6")
+	viper.SetDefault("Captcha.Prefix", "captcha_")
+	viper.SetDefault("Captcha.Expires", "600")
 	Captcha.Enabled = viper.GetBool("Captcha.Enabled")
 	Captcha.Store = viper.GetString("Captcha.Store")
 	Captcha.Height = viper.GetInt("Captcha.Height")
 	Captcha.Width = viper.GetInt("Captcha.Width")
 	Captcha.Length = viper.GetInt("Captcha.Length")
+	Captcha.Prefix = viper.GetString("Captcha.Prefix")
+	Captcha.Expires = time.Duration(viper.GetUint64("Captcha.Expires")) * time.Second
 }

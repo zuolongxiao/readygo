@@ -49,7 +49,12 @@ func startHTTP() {
 		return
 	}
 
-	store.Setup()
+	if settings.Captcha.Enabled {
+		if err := store.Setup(); err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
 
 	go jobs.SetPermissions()
 

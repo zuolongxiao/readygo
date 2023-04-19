@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"readygo/pkg/db"
 	"readygo/pkg/settings"
@@ -20,21 +19,19 @@ type CaptchaStorer interface {
 var CaptchaStore CaptchaStorer
 
 var ctx = context.Background()
-var prefix = "captcha_"
 
 // RedisCaptchaStore
 type RedisCaptchaStore struct{}
 
 func (RedisCaptchaStore) Set(id string, value string) error {
-	exp := time.Minute * 10
-	key := fmt.Sprintf("%s%s", prefix, id)
-	if err := db.RDB.Set(ctx, key, value, exp).Err(); err != nil {
+	key := fmt.Sprintf("%s%s", settings.Captcha.Prefix, id)
+	if err := db.RDB.Set(ctx, key, value, settings.Captcha.Expires).Err(); err != nil {
 		return err
 	}
 	return nil
 }
 func (RedisCaptchaStore) Get(id string, clear bool) (val string) {
-	key := fmt.Sprintf("%s%s", prefix, id)
+	key := fmt.Sprintf("%s%s", settings.Captcha.Prefix, id)
 	val, _ = db.RDB.Get(ctx, key).Result()
 	// if err != nil {
 	// 	fmt.Println("RDB.Get error:", err)
@@ -52,11 +49,14 @@ func (s RedisCaptchaStore) Verify(id, answer string, clear bool) bool {
 	return code == answer
 }
 
-func Setup() {
+func Setup() error {
 	switch settings.Captcha.Store {
 	case "Redis":
 		CaptchaStore = RedisCaptchaStore{}
-	default:
+	case "Memory":
 		CaptchaStore = base64Captcha.DefaultMemStore
+	default:
+		return fmt.Errorf("%s captcha store not implemented", settings.Captcha.Store)
 	}
+	return nil
 }
