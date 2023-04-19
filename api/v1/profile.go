@@ -27,11 +27,12 @@ func GetProfile(ctx *gin.Context) {
 	profile.Username = adminMdl.Username
 	profile.CreatedAt = adminMdl.CreatedAt.Time
 	profile.UpdatedAt = adminMdl.UpdatedAt.Time
+	profile.Roles = []string{}
 	if adminMdl.RoleID > 0 {
 		roleMdl := models.Role{}
 		roleSvc := services.New(&roleMdl)
 		if err := roleSvc.LoadByID(fmt.Sprint(adminMdl.RoleID)); err == nil {
-			profile.RoleName = roleMdl.Name
+			profile.Roles = append(profile.Roles, roleMdl.Name)
 		}
 	}
 

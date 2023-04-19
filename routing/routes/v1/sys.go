@@ -15,6 +15,13 @@ var sys = []routes.Route{
 	},
 	{
 		Method:  "GET",
+		Pattern: "/captcha",
+		Handler: apiv1.GenerateCaptcha,
+		Flag:    "-",
+		Desc:    "Generate Captcha",
+	},
+	{
+		Method:  "GET",
 		Pattern: "/admins",
 		Handler: apiv1.ListAdmins,
 		Flag:    "Y",

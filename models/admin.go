@@ -49,16 +49,18 @@ type AdminUpdate struct {
 
 // Auth binding
 type Auth struct {
-	Username string `json:"username" binding:"required,alphanum,min=2,max=50"`
-	Password string `json:"password" binding:"required,min=2,max=50"`
+	Username    string `json:"username" binding:"required,alphanum,min=2,max=50"`
+	Password    string `json:"password" binding:"required,min=2,max=50"`
+	CaptchaCode string `json:"code" binding:"required,min=2,max=50"`
+	CaptchaID   string `json:"id" binding:"required,min=2,max=50"`
 }
 
 // ProfileView view
 type ProfileView struct {
 	BaseView
 
-	Username string `json:"username"`
-	RoleName string `json:"role_name"`
+	Username string   `json:"username"`
+	Roles    []string `json:"roles"`
 }
 
 // ProfileUpdate binding

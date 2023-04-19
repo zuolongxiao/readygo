@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"readygo/models"
@@ -20,8 +19,12 @@ func Auth(c *gin.Context) {
 
 	au := models.Auth{}
 	if err := w.Bind(&au); err != nil {
-		fmt.Printf("err: %+v\n", err)
 		w.Respond(err, nil)
+		return
+	}
+
+	if !captchaStore.Verify(au.CaptchaID, au.CaptchaCode, true) {
+		w.Respond(errs.ValidationError("invalid captcha code"), nil)
 		return
 	}
 
