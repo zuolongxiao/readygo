@@ -7,6 +7,13 @@ import (
 
 var sys = []routes.Route{
 	{
+		Method:  "POST",
+		Pattern: "/auth",
+		Handler: apiv1.Auth,
+		Flag:    "-",
+		Desc:    "Authentication",
+	},
+	{
 		Method:  "GET",
 		Pattern: "/admins",
 		Handler: apiv1.ListAdmins,

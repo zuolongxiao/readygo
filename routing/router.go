@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"readygo/api"
+	"readygo/middlewares"
 	"readygo/pkg/settings"
 	v1 "readygo/routing/routes/v1"
 
@@ -27,14 +28,12 @@ func Setup() *gin.Engine {
 	gin.SetMode(settings.Gin.Mode)
 
 	r := gin.New()
-
 	r.Use(gin.Logger())
-
 	r.Use(gin.Recovery())
+	r.Use(middlewares.CORSMiddleware())
 
 	r.GET("/api", api.Index)
-
-	r.POST("/api/auth", api.Auth)
+	//r.POST("/api/auth", api.Auth)
 
 	v1Group := r.Group(v1.Prefix)
 	v1Group.Use(v1.Middlewares...)

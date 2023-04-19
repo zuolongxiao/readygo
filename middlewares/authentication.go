@@ -10,9 +10,17 @@ import (
 // TokenType Authorization token type
 const TokenType = "Bearer"
 
+var Whitelist = []string{
+	"/api/v1/auth",
+}
+
 // Authenticate verify JWT
 func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if utils.StrInSlice(c.Request.URL.Path, Whitelist) {
+			c.Next()
+			return
+		}
 		w := utils.NewContextWrapper(c)
 
 		header := c.GetHeader("Authorization")
