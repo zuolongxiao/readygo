@@ -69,6 +69,15 @@ var Redis struct {
 	DB       int
 }
 
+// Captcha
+var Captcha struct {
+	Enabled bool
+	Store   string
+	Height  int
+	Width   int
+	Length  int
+}
+
 // Load initialize the configuration instance
 func Load() {
 	// log.Println("settings.Load")
@@ -136,4 +145,15 @@ func Load() {
 	Redis.Addr = viper.GetString("Redis.Addr")
 	Redis.Password = viper.GetString("Redis.Password")
 	Redis.DB = viper.GetInt("Redis.DB")
+
+	viper.SetDefault("Captcha.Enabled", "0")
+	viper.SetDefault("Captcha.Store", "Memory")
+	viper.SetDefault("Captcha.Height", "40")
+	viper.SetDefault("Captcha.Width", "100")
+	viper.SetDefault("Captcha.Length", "6")
+	Captcha.Enabled = viper.GetBool("Captcha.Enabled")
+	Captcha.Store = viper.GetString("Captcha.Store")
+	Captcha.Height = viper.GetInt("Captcha.Height")
+	Captcha.Width = viper.GetInt("Captcha.Width")
+	Captcha.Length = viper.GetInt("Captcha.Length")
 }

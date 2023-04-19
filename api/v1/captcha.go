@@ -1,26 +1,30 @@
 package api
 
 import (
-	"readygo/pkg/db"
+	"readygo/pkg/errs"
+	"readygo/pkg/settings"
+	"readygo/pkg/store"
 	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mojocn/base64Captcha"
 )
 
-// var captchaStore = base64Captcha.DefaultMemStore
-var captchaStore = db.RedisCaptchaStore{}
-
 // GenerateCaptcha
 func GenerateCaptcha(c *gin.Context) {
 	cw := utils.NewContextWrapper(c)
 
-	driver := base64Captcha.DriverDigit{
-		Height: 40,
-		Width:  100,
-		Length: 6,
+	if !settings.Captcha.Enabled {
+		cw.Respond(errs.NotFoundError("captcha"), nil)
+		return
 	}
-	cap := base64Captcha.NewCaptcha(&driver, captchaStore)
+
+	driver := base64Captcha.DriverDigit{
+		Height: settings.Captcha.Height,
+		Width:  settings.Captcha.Width,
+		Length: settings.Captcha.Length,
+	}
+	cap := base64Captcha.NewCaptcha(&driver, store.CaptchaStore)
 	id, b64s, err := cap.Generate()
 	if err != nil {
 		cw.Respond(err, nil)

@@ -7,6 +7,7 @@ import (
 	"readygo/models"
 	"readygo/pkg/errs"
 	"readygo/pkg/settings"
+	"readygo/pkg/store"
 	"readygo/services"
 	"readygo/utils"
 
@@ -23,9 +24,11 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	if !captchaStore.Verify(au.CaptchaID, au.CaptchaCode, true) {
-		w.Respond(errs.ValidationError("invalid captcha code"), nil)
-		return
+	if settings.Captcha.Enabled {
+		if !store.CaptchaStore.Verify(au.CaptchaID, au.CaptchaCode, true) {
+			w.Respond(errs.ValidationError("invalid captcha code"), nil)
+			return
+		}
 	}
 
 	admin := models.Admin{}

@@ -8,6 +8,7 @@ import (
 	"readygo/pkg/db"
 	"readygo/pkg/jobs"
 	"readygo/pkg/settings"
+	"readygo/pkg/store"
 	"readygo/routing"
 
 	"github.com/spf13/cobra"
@@ -47,6 +48,8 @@ func startHTTP() {
 		fmt.Println(err)
 		return
 	}
+
+	store.Setup()
 
 	go jobs.SetPermissions()
 
