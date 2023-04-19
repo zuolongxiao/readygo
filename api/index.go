@@ -9,9 +9,10 @@ import (
 
 // Index index
 func Index(c *gin.Context) {
-	data := make(map[string]interface{})
-	data["name"] = settings.App.Name
-	data["version"] = settings.Version
+	data := map[string]string{
+		"name":    settings.App.Name,
+		"version": settings.Version,
+	}
 
 	c.JSON(http.StatusOK, data)
 }

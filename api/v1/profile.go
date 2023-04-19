@@ -12,30 +12,30 @@ import (
 )
 
 // GetProfile GetProfile
-func GetProfile(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+func GetProfile(ctx *gin.Context) {
+	cw := utils.NewContextWrapper(ctx)
 
-	am := models.Admin{}
-	as := services.New(&am)
-	if err := as.LoadByKey("username", w.GetUsername()); err != nil {
-		w.Respond(err, nil)
+	adminMdl := models.Admin{}
+	adminSvc := services.New(&adminMdl)
+	if err := adminSvc.LoadByKey("username", cw.GetUsername()); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	var profile models.ProfileView
-	profile.ID = am.ID
-	profile.Username = am.Username
-	profile.CreatedAt = am.CreatedAt.Time
-	profile.UpdatedAt = am.UpdatedAt.Time
-	if am.RoleID > 0 {
-		rm := models.Role{}
-		rs := services.New(&rm)
-		if err := rs.LoadByID(fmt.Sprint(am.RoleID)); err == nil {
-			profile.Role = rm.Name
+	profile.ID = adminMdl.ID
+	profile.Username = adminMdl.Username
+	profile.CreatedAt = adminMdl.CreatedAt.Time
+	profile.UpdatedAt = adminMdl.UpdatedAt.Time
+	if adminMdl.RoleID > 0 {
+		roleMdl := models.Role{}
+		roleSvc := services.New(&roleMdl)
+		if err := roleSvc.LoadByID(fmt.Sprint(adminMdl.RoleID)); err == nil {
+			profile.RoleName = roleMdl.Name
 		}
 	}
 
-	w.Respond(nil, profile)
+	cw.Respond(nil, profile)
 }
 
 // UpdateProfile UpdateProfile

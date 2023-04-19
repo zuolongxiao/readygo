@@ -58,7 +58,7 @@ type ProfileView struct {
 	BaseView
 
 	Username string `json:"username"`
-	Role     string `json:"role"`
+	RoleName string `json:"role_name"`
 }
 
 // ProfileUpdate binding

@@ -93,7 +93,11 @@ func Auth(c *gin.Context) {
 	}
 	_ = s.Update("LastLoginIP", "LastLoginAt")
 
-	data := make(map[string]interface{})
-	data["token"] = token
+	nowTime := time.Now()
+	expireTime := nowTime.Add(settings.JWT.Expires)
+	data := map[string]string{
+		"token":   token,
+		"expires": expireTime.Format(time.RFC3339),
+	}
 	w.Respond(nil, data)
 }
