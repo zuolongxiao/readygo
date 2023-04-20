@@ -29,14 +29,17 @@ func Setup() error {
 		}
 	}
 
+	var err error
 	switch settings.Database.Type {
 	case "MySQL":
-		return setupMysql()
+		err = setupMysql()
 	case "SQLite":
-		return setupSqlite()
+		err = setupSqlite()
+	default:
+		err = fmt.Errorf("database %s has not support yet", settings.Database.Type)
 	}
 
-	return fmt.Errorf("database %s has not support yet", settings.Database.Type)
+	return err
 }
 
 func setupMysql() error {

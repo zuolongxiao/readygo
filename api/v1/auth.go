@@ -16,17 +16,17 @@ import (
 
 // Auth get JWT token
 func Auth(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
 	au := models.Auth{}
-	if err := w.Bind(&au); err != nil {
-		w.Respond(err, nil)
+	if err := cw.Bind(&au); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	if settings.Captcha.Enabled {
 		if !store.CaptchaStore.Verify(au.CaptchaID, au.CaptchaCode, true) {
-			w.Respond(errs.ValidationError("invalid captcha code"), nil)
+			cw.Respond(errs.ValidationError("invalid captcha code"), nil)
 			return
 		}
 	}
@@ -35,17 +35,17 @@ func Auth(c *gin.Context) {
 	s := services.New(&admin)
 	if err := s.LoadByKey("username", au.Username); err != nil {
 		// w.Respond(err, nil)
-		w.Respond(errs.ValidationError("incorrect username or password"), nil)
+		cw.Respond(errs.ValidationError("incorrect username or password"), nil)
 		return
 	}
 
 	if !utils.VerifyPassword(admin.Password, au.Password) {
-		w.Respond(errs.ValidationError("incorrect username or password"), nil)
+		cw.Respond(errs.ValidationError("incorrect username or password"), nil)
 		return
 	}
 
 	if admin.IsLocked == "Y" {
-		w.Respond(errs.LockedError(admin.Username), nil)
+		cw.Respond(errs.LockedError(admin.Username), nil)
 		return
 	}
 
@@ -61,7 +61,7 @@ func Auth(c *gin.Context) {
 			}
 			as := services.New(&am)
 			if err := as.GetRows(&ao, roleID); err != nil {
-				w.Respond(err, nil)
+				cw.Respond(err, nil)
 				return
 			}
 			permissionIDs := make([]uint64, 0, 10)
@@ -74,7 +74,7 @@ func Auth(c *gin.Context) {
 				pm := models.Permission{}
 				ps := services.New(&pm)
 				if err := ps.GetRows(&po, permissionIDs); err != nil {
-					w.Respond(err, nil)
+					cw.Respond(err, nil)
 					return
 				}
 				for _, v := range po {
@@ -88,7 +88,7 @@ func Auth(c *gin.Context) {
 
 	token, err := utils.GenerateToken(admin.Username, permissions)
 	if err != nil {
-		w.Respond(errs.InternalServerError(err.Error()), nil)
+		cw.Respond(errs.InternalServerError(err.Error()), nil)
 		return
 	}
 
@@ -105,5 +105,5 @@ func Auth(c *gin.Context) {
 		"token":   token,
 		"expires": expireTime.Format(time.RFC3339),
 	}
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }
