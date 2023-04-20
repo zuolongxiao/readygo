@@ -2,7 +2,7 @@ package api
 
 import (
 	"net/http"
-	"readygo/pkg/settings"
+	"readygo/pkg/global"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,8 +10,10 @@ import (
 // Index index
 func Index(c *gin.Context) {
 	data := map[string]string{
-		"name":    settings.App.Name,
-		"version": settings.Version,
+		"name":    global.Name,
+		"version": global.Version,
+		"author":  global.Author,
+		"email":   global.Email,
 	}
 
 	c.JSON(http.StatusOK, data)

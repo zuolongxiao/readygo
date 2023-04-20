@@ -7,8 +7,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const Version string = "1.1.0"
-
 // App
 var App struct {
 	Name            string

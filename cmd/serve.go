@@ -58,16 +58,17 @@ func startHTTP() {
 
 	go jobs.SetPermissions()
 
-	router := routing.Setup()
+	handler := routing.NewRouter()
+	addr := fmt.Sprintf("%s:%d", host, port)
 	server := &http.Server{
-		Addr:           fmt.Sprintf("%s:%d", host, port),
-		Handler:        router,
+		Addr:           addr,
+		Handler:        handler,
 		ReadTimeout:    settings.Server.ReadTimeout,
 		WriteTimeout:   settings.Server.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	log.Printf("HTTP server started on: %s:%d\n", host, port)
+	log.Printf("HTTP server started on:%s\n", addr)
 
 	if err := server.ListenAndServe(); err != nil {
 		fmt.Println(err)

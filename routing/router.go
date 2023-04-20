@@ -14,8 +14,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// Setup setup router
-func Setup() *gin.Engine {
+// NewRouters
+func NewRouter() *gin.Engine {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterTagNameFunc(func(fld reflect.StructField) string {
 			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
@@ -25,6 +25,7 @@ func Setup() *gin.Engine {
 			return name
 		})
 	}
+
 	gin.SetMode(settings.Gin.Mode)
 
 	r := gin.New()
@@ -33,7 +34,6 @@ func Setup() *gin.Engine {
 	r.Use(middlewares.CORSMiddleware())
 
 	r.GET("/api", api.Index)
-	//r.POST("/api/auth", api.Auth)
 
 	v1Group := r.Group(v1.Prefix)
 	v1Group.Use(v1.Middlewares...)
