@@ -29,12 +29,7 @@ func migrate() {
 		return
 	}
 
-	db.DB.AutoMigrate(
-		&models.Admin{},
-		&models.Authorization{},
-		&models.Permission{},
-		&models.Role{},
-	)
+	db.DB.AutoMigrate(models.Migrations...)
 
 	fmt.Println("done")
 }

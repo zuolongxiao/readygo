@@ -18,6 +18,7 @@ var ctx = context.Background()
 
 // RedisCaptchaStore
 type RedisCaptchaStore struct {
+	ctx     context.Context
 	rdb     *redis.Client
 	prefix  string
 	expires time.Duration
@@ -25,19 +26,19 @@ type RedisCaptchaStore struct {
 
 func (s RedisCaptchaStore) Set(id string, value string) error {
 	key := fmt.Sprintf("%s%s", s.prefix, id)
-	if err := s.rdb.Set(ctx, key, value, s.expires).Err(); err != nil {
+	if err := s.rdb.Set(s.ctx, key, value, s.expires).Err(); err != nil {
 		return err
 	}
 	return nil
 }
 func (s RedisCaptchaStore) Get(id string, clear bool) (val string) {
 	key := fmt.Sprintf("%s%s", s.prefix, id)
-	val, _ = s.rdb.Get(ctx, key).Result()
+	val, _ = s.rdb.Get(s.ctx, key).Result()
 	// if err != nil {
 	// 	fmt.Println("rdb.Get error:", err)
 	// }
 	if clear {
-		s.rdb.Del(ctx, key).Err()
+		s.rdb.Del(s.ctx, key).Err()
 		// if err != nil {
 		// 	fmt.Println("rdb.Del error:", err)
 		// }
@@ -53,6 +54,7 @@ func Setup() error {
 	switch settings.Captcha.Store {
 	case "Redis":
 		CaptchaStore = RedisCaptchaStore{
+			ctx:     ctx,
 			rdb:     db.RDB,
 			prefix:  settings.Captcha.Prefix,
 			expires: settings.Captcha.Expires,

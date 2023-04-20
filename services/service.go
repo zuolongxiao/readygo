@@ -97,7 +97,7 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 
 	err := db.Model(s.model).Order(order).Limit(size).Find(o).Error
 	if err != nil {
-		return err
+		return errs.DBError(err.Error())
 	}
 
 	v := reflect.ValueOf(o).Elem()
