@@ -37,8 +37,8 @@ var adminCreateCmd = &cobra.Command{
 
 func init() {
 	adminCmd.AddCommand(adminCreateCmd)
-	adminCreateCmd.Flags().StringVarP(&username, "username", "u", "", "用户名")
-	adminCreateCmd.Flags().StringVarP(&password, "password", "p", "", "密码")
+	adminCreateCmd.Flags().StringVarP(&username, "username", "u", "", "username")
+	adminCreateCmd.Flags().StringVarP(&password, "password", "p", "", "password")
 
 	adminCreateCmd.MarkFlagRequired("username")
 }

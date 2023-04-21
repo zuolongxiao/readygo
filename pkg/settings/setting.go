@@ -15,6 +15,12 @@ var App struct {
 	RuntimeRootPath string
 }
 
+// CORS
+var CORS struct {
+	AllowOrigin  string
+	AllowMethods string
+}
+
 // Gin
 var Gin struct {
 	Mode string
@@ -93,6 +99,11 @@ func Load() {
 	App.PageSize = viper.GetUint32("App.PageSize")
 	App.SuperAdminID = viper.GetUint64("App.SuperAdminID")
 	App.RuntimeRootPath = viper.GetString("App.RuntimeRootPath")
+
+	viper.SetDefault("CORS.AllowOrigin", "*")
+	viper.SetDefault("CORS.AllowMethods", "OPTIONS, GET, POST, PUT, DELETE")
+	CORS.AllowOrigin = viper.GetString("CORS.AllowOrigin")
+	CORS.AllowMethods = viper.GetString("CORS.AllowMethods")
 
 	viper.SetDefault("Gin.Mode", "debug")
 	Gin.Mode = viper.GetString("Gin.Mode")

@@ -27,7 +27,7 @@ func GenerateCaptcha(c *gin.Context) {
 	cap := base64Captcha.NewCaptcha(&driver, store.CaptchaStore)
 	id, b64s, err := cap.Generate()
 	if err != nil {
-		cw.Respond(err, nil)
+		cw.Respond(errs.DBError(err.Error()), nil)
 		return
 	}
 	data := map[string]interface{}{

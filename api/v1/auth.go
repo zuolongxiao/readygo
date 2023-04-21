@@ -97,7 +97,7 @@ func Auth(c *gin.Context) {
 		Time:  time.Now(),
 		Valid: true,
 	}
-	_ = s.Update("LastLoginIP", "LastLoginAt")
+	s.Update("LastLoginIP", "LastLoginAt")
 
 	nowTime := time.Now()
 	expireTime := nowTime.Add(settings.JWT.Expires)

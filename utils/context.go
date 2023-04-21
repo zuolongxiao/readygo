@@ -109,10 +109,10 @@ func (w *ContextWrapper) Bind(o interface{}) error {
 	}
 
 	if err := w.ctx.ShouldBindJSON(o); err != nil {
-		var verr validator.ValidationErrors
-		if errors.As(err, &verr) {
+		var validationErr validator.ValidationErrors
+		if errors.As(err, &validationErr) {
 			var errmsg string
-			for i, f := range verr {
+			for i, f := range validationErr {
 				tag := f.ActualTag()
 				field := f.Field()
 				param := f.Param()
