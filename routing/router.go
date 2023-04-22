@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"net/http"
 	"reflect"
 	"strings"
 
@@ -32,6 +33,10 @@ func NewRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(middlewares.CORSMiddleware())
+
+	r.GET("/", func(ctx *gin.Context) {
+		ctx.String(http.StatusOK, "Readygo, a Golang framework for quick API development")
+	})
 
 	r.GET("/api", api.Index)
 

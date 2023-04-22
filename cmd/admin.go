@@ -8,8 +8,8 @@ import (
 // go run main.go admin
 var adminCmd = &cobra.Command{
 	Use:   "admin",
-	Short: "admin",
-	Long:  `admin`,
+	Short: "Admin",
+	Long:  `Admin`,
 }
 
 func init() {

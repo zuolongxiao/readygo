@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -27,8 +28,9 @@ type Filterer interface {
 
 // Base base service
 type Base struct {
-	model  interface{}
-	offset int
+	model interface{}
+	prev  uint64
+	next  uint64
 }
 
 // New new service
@@ -38,40 +40,66 @@ func New(m interface{}) *Base {
 
 // Find Find
 func (s *Base) Find(o interface{}, c global.Queryer) error {
-	fields := []string{"id"}
-	maxSize := 100
+	sort := c.Query("sort") // +id or -id
+	dir := c.Query("dir")   // next or prev
+	size, _ := strconv.Atoi(c.Query("size"))
+	offset, _ := strconv.ParseUint(c.Query("offset"), 10, 0)
+	IDs := c.Query("IDs") // 1,2,3
 
-	var field string
-	dir := "ASC"
-	op := ">"
-	sort := c.Query("sort")
+	fields := []string{"id"}
+	maxSize := 500
+
+	field := ""
+	sortDir := ""
+	op := ""
+	sym := "+"
+
+	if dir != "next" && dir != "prev" {
+		dir = "next"
+	}
+
 	if len(sort) > 0 {
-		sym := sort[0:1]
-		if sym == "+" || sym == "-" {
-			if sym == "-" {
-				dir = "DESC"
-				op = "<"
-			}
+		ch := sort[0:1]
+		if ch == "+" || ch == "-" {
+			sym = ch
 			field = sort[1:]
 		} else {
 			field = sort
 		}
 	}
+
 	if !utils.StrInSlice(field, fields) {
 		field = fields[0]
 	}
-	order := field + " " + dir
 
-	offset, _ := strconv.Atoi(c.Query("offset"))
-	if offset < 0 {
-		offset = 0
+	isReverse := false
+	if sym == "+" {
+		if dir == "next" {
+			op = ">"
+			sortDir = "ASC"
+		} else {
+			op = "<"
+			sortDir = "DESC"
+			isReverse = true
+		}
+	} else {
+		if dir == "next" {
+			op = "<"
+			sortDir = "DESC"
+		} else {
+			op = ">"
+			sortDir = "ASC"
+			isReverse = true
+		}
 	}
+
+	order := field + " " + sortDir
 
 	pageSize := 20
 	if p, ok := s.model.(Pager); ok {
 		pageSize = p.Size()
 	}
-	size, _ := strconv.Atoi(c.Query("size"))
+
 	if size <= 0 {
 		size = pageSize
 	}
@@ -79,32 +107,74 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 		size = maxSize
 	}
 
-	db := db.DB.Session(&gorm.Session{})
+	session := db.DB.Session(&gorm.Session{})
 
-	if offset > 0 {
-		where := "id " + op + " ?"
-		db = db.Where(where, offset)
-	}
-
-	if IDs := c.Query("IDs"); IDs != "" {
+	if IDs != "" {
 		ids := strings.Split(IDs, ",")
-		db = db.Where("id IN ?", ids)
+		session = session.Where("id IN ?", ids)
 	}
 
 	if f, ok := s.model.(Filterer); ok {
-		db = f.Filter(db, c)
+		session = f.Filter(session, c)
 	}
 
-	err := db.Model(s.model).Order(order).Limit(size).Find(o).Error
+	minIdKey := "MIN(id)"
+	maxIdKey := "MAX(id)"
+	result := map[string]interface{}{}
+	session.Model(s.model).Select(fmt.Sprintf("%s, %s", minIdKey, maxIdKey)).Take(result)
+	var minId uint64
+	var maxId uint64
+	if reflect.ValueOf(result[minIdKey]).IsValid() {
+		minId = uint64(reflect.ValueOf(result[minIdKey]).Int())
+	}
+	if reflect.ValueOf(result[maxIdKey]).IsValid() {
+		maxId = uint64(reflect.ValueOf(result[maxIdKey]).Int())
+	}
+	// fmt.Println(minId, maxId)
+
+	if offset > 0 {
+		where := "id " + op + " ?"
+		session = session.Where(where, offset)
+	}
+
+	err := session.Model(s.model).Select("*").Order(order).Limit(size).Find(o).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// return errs.NotFoundError(err.Error())
+			return nil
+		}
 		return errs.DBError(err.Error())
 	}
 
+	if isReverse {
+		reverse(o)
+	}
+
 	v := reflect.ValueOf(o).Elem()
-	l := v.Len()
-	if l == size {
-		e := v.Index(l - 1)
-		s.offset = int(e.FieldByName("ID").Uint())
+	len := v.Len()
+	if len > 0 {
+		first := v.Index(0).FieldByName("ID").Uint()
+		last := v.Index(len - 1).FieldByName("ID").Uint()
+		if offset == 0 && len < size {
+			s.next = 0
+			s.prev = 0
+		} else {
+			if sym == "+" {
+				if last < maxId {
+					s.next = last
+				}
+				if first > minId {
+					s.prev = first
+				}
+			} else {
+				if last > minId {
+					s.next = last
+				}
+				if first < maxId {
+					s.prev = first
+				}
+			}
+		}
 	}
 
 	return nil
@@ -254,8 +324,18 @@ func (s *Base) Delete() error {
 }
 
 // GetOffset GetOffset
-func (s *Base) GetOffset() int {
-	return s.offset
+func (s *Base) GetOffset() (uint64, uint64) {
+	return s.prev, s.next
+}
+
+// GetPrev GetPrev
+func (s *Base) GetPrev() uint64 {
+	return s.prev
+}
+
+// GetNext GetNext
+func (s *Base) GetNext() uint64 {
+	return s.next
 }
 
 func (s *Base) getTypeName() string {
@@ -263,4 +343,13 @@ func (s *Base) getTypeName() string {
 	typ := v.Elem().Type().String()
 	ss := strings.Split(typ, ".")
 	return strings.ToLower(ss[len(ss)-1:][0])
+}
+
+func reverse(s interface{}) {
+	v := reflect.ValueOf(s).Elem()
+	swap := reflect.Swapper(v.Interface())
+	n := v.Len()
+	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+		swap(i, j)
+	}
 }

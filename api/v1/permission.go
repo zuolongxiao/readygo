@@ -20,8 +20,9 @@ func ListPermissions(c *gin.Context) {
 	}
 
 	data := map[string]interface{}{
-		"list":   list,
-		"offset": s.GetOffset(),
+		"list": list,
+		"prev": s.GetPrev(),
+		"next": s.GetNext(),
 	}
 
 	w.Respond(nil, data)

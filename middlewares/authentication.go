@@ -7,8 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TokenType Authorization token type
-const TokenType = "Bearer"
+// TokenType & TokenHeader
+const (
+	TokenType   = "Bearer"
+	TokenHeader = "Authorization"
+)
 
 var Whitelist = []string{
 	"/api/v1/auth",
@@ -24,7 +27,7 @@ func Authenticate() gin.HandlerFunc {
 		}
 		w := utils.NewContextWrapper(c)
 
-		header := c.GetHeader("Authorization")
+		header := c.GetHeader(TokenHeader)
 		if len(header) < len(TokenType)+1 {
 			w.RespondAndAbort(errs.UnauthorizedError("missing token"), nil)
 			return
@@ -32,13 +35,13 @@ func Authenticate() gin.HandlerFunc {
 
 		token := header[len(TokenType)+1:]
 		if token == "" {
-			w.RespondAndAbort(errs.UnauthorizedError("empty token"), nil)
+			w.RespondAndAbort(errs.UnauthorizedError("missing token"), nil)
 			return
 		}
 
 		claims, err := utils.ParseToken(token)
 		if err != nil {
-			w.RespondAndAbort(errs.UnauthorizedError(err.Error()), nil)
+			w.RespondAndAbort(err, nil)
 			return
 		}
 

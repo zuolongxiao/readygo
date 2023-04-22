@@ -20,8 +20,9 @@ func ListTags(c *gin.Context) {
 	}
 
 	data := map[string]interface{}{
-		"list":   tags,
-		"offset": s.GetOffset(),
+		"list": tags,
+		"prev": s.GetPrev(),
+		"next": s.GetNext(),
 	}
 
 	w.Respond(nil, data)

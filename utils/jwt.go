@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"readygo/pkg/errs"
 	"readygo/pkg/settings"
 
 	jwt "github.com/golang-jwt/jwt/v4"
@@ -46,12 +47,12 @@ func ParseToken(token string) (*Claims, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, errs.UnauthorizedError(err.Error())
 	}
 
 	if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
 		return claims, nil
 	}
 
-	return nil, errors.New("JWT parsing error")
+	return nil, errs.InternalServerError("JWT parsing error")
 }

@@ -24,8 +24,9 @@ func ListRoles(ctx *gin.Context) {
 	}
 
 	data := map[string]interface{}{
-		"list":   list,
-		"offset": svc.GetOffset(),
+		"list": list,
+		"prev": svc.GetPrev(),
+		"next": svc.GetNext(),
 	}
 
 	cw.Respond(nil, data)
@@ -174,8 +175,9 @@ func ListRolePermissions(c *gin.Context) {
 	}
 
 	data := map[string]interface{}{
-		"list":   lst,
-		"offset": svc.GetOffset(),
+		"list": lst,
+		"prev": svc.GetPrev(),
+		"next": svc.GetNext(),
 	}
 
 	w.Respond(nil, data)

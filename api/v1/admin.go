@@ -53,8 +53,9 @@ func ListAdmins(c *gin.Context) {
 	}
 
 	resp := map[string]interface{}{
-		"list":   lst,
-		"offset": s.GetOffset(),
+		"list": lst,
+		"prev": s.GetPrev(),
+		"next": s.GetNext(),
 	}
 
 	w.Respond(nil, resp)
