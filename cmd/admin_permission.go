@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// 导入权限
+// Load permissions into database
 // go run main.go admin permission
 var adminPermissionCmd = &cobra.Command{
 	Use:   "permission",

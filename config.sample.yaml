@@ -1,5 +1,5 @@
-# 配置文件, 可以通过设置环境变量来覆盖配置项
-# 例如: Server.HTTPPort 设置对应的环境变量为: export SERVER_HTTPPORT=9331
+# All config options can be overwrote by ENV variables,
+# For example: `Server.HTTPPort: 9331` the corresponding ENV variable can be set as: `export SERVER_HTTPPORT=9331`
 
 App:
   Name: readygo
@@ -26,7 +26,7 @@ Server:
   WriteTimeOut: 60 # seconds
 
 Database:
-  Type: MySQL # MySQL or SQLite
+  Type: SQLite # MySQL or SQLite
   Prefix: g_
 
 MySQL:
@@ -44,14 +44,14 @@ SQLite:
   Name: db.sqlite
 
 Redis:
-  Enabled: 1
+  Enabled: 0
   Addr: 127.0.0.1:6379
   Password:
   DB: 0
 
 Captcha:
   Enabled: 0
-  Store: Redis # Redis or Memory
+  Store: Memory # Redis or Memory
   Height: 40
   Width: 100
   Length: 6

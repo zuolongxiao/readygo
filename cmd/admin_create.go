@@ -14,7 +14,7 @@ import (
 var username string
 var password string
 
-// 创建管理员
+// Create administrator
 // go run main.go admin create -u zuolongxiao -p zuolongxiao
 var adminCreateCmd = &cobra.Command{
 	Use:   "create",

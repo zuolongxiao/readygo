@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// 数据库迁移
+// Migrate tables
 // go run main.go admin migrate
 var adminMigrateCmd = &cobra.Command{
 	Use:   "migrate",

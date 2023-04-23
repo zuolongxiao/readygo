@@ -4,7 +4,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// admin
 // go run main.go admin
 var adminCmd = &cobra.Command{
 	Use:   "admin",

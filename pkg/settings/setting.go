@@ -123,7 +123,7 @@ func Load() {
 	Server.ReadTimeout = time.Duration(viper.GetUint64("Server.ReadTimeout")) * time.Second
 	Server.WriteTimeout = time.Duration(viper.GetUint64("Server.WriteTimeout")) * time.Second
 
-	viper.SetDefault("Database.Type", "MySQL")
+	viper.SetDefault("Database.Type", "SQLite")
 	viper.SetDefault("Database.Prefix", "g_")
 	Database.Type = viper.GetString("Database.Type")
 	Database.Prefix = viper.GetString("Database.Prefix")
