@@ -2,6 +2,7 @@ package api
 
 import (
 	"readygo/models"
+	"readygo/pkg/settings"
 	"readygo/services"
 	"readygo/utils"
 
@@ -67,7 +68,7 @@ func CreateTag(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         m.ID,
-		"created_at": m.CreatedAt.Time,
+		"created_at": m.CreatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
 	w.Respond(nil, data)
@@ -103,7 +104,7 @@ func UpdateTag(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         m.ID,
-		"updated_at": m.UpdatedAt.Time,
+		"updated_at": m.UpdatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
 	w.Respond(nil, data)

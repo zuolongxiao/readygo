@@ -2,12 +2,40 @@ package models
 
 import (
 	"database/sql"
+	"database/sql/driver"
+	"fmt"
 	"readygo/pkg/settings"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
+
+type LocalTime time.Time
+
+func (t LocalTime) MarshalJSON() ([]byte, error) {
+	tTime := time.Time(t)
+	return []byte(fmt.Sprintf("\"%v\"", tTime.Format(settings.App.TimeFormat))), nil
+}
+func (t LocalTime) Value() (driver.Value, error) {
+	var zeroTime time.Time
+	tlt := time.Time(t)
+	if tlt.UnixNano() == zeroTime.UnixNano() {
+		return nil, nil
+	}
+	return tlt, nil
+}
+func (t *LocalTime) Scan(v interface{}) error {
+	if value, ok := v.(time.Time); ok {
+		*t = LocalTime(value)
+		return nil
+	}
+	return fmt.Errorf("can not convert %v to timestamp", v)
+}
+func (t *LocalTime) String() string {
+	tTime := time.Time(*t)
+	return tTime.Format(settings.App.TimeFormat)
+}
 
 // Base base model
 type Base struct {
@@ -26,8 +54,8 @@ func (*Base) Size() int {
 // BaseView base view
 type BaseView struct {
 	ID        uint64    `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt LocalTime `json:"created_at"`
+	UpdatedAt LocalTime `json:"updated_at"`
 }
 
 // IDsQueryer

@@ -5,7 +5,6 @@ import (
 
 	"readygo/pkg/errs"
 	"readygo/pkg/global"
-	"readygo/utils"
 
 	"gorm.io/gorm"
 )
@@ -29,6 +28,7 @@ type AdminView struct {
 
 	RoleID   uint64 `json:"role_id"`
 	Username string `json:"username"`
+	IsLocked string `json:"is_locked"`
 }
 
 // AdminCreate binding
@@ -90,14 +90,6 @@ func (m *Admin) BeforeSave(tx *gorm.DB) error {
 		return errs.DuplicatedError("admin.username")
 	}
 
-	if m.Password != "" {
-		password, err := utils.HashPassword(m.Password)
-		if err != nil {
-			return err
-		}
-		m.Password = password
-	}
-
 	return nil
 }
 
@@ -109,6 +101,10 @@ func (m *Admin) Filter(db *gorm.DB, c global.Queryer) *gorm.DB {
 
 	if isLocked := c.Query("is_locked"); isLocked != "" {
 		db = db.Where("is_locked = ?", isLocked)
+	}
+
+	if roleID := c.Query("role_id"); roleID != "" {
+		db = db.Where("role_id = ?", roleID)
 	}
 
 	return db

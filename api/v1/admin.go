@@ -78,6 +78,14 @@ func CreateAdmin(c *gin.Context) {
 		return
 	}
 
+	if binding.Password != "" {
+		hashedPassword, err := utils.HashPassword(binding.Password)
+		if err != nil {
+			w.Respond(errs.InternalServerError(err.Error()), nil)
+		}
+		m.Password = hashedPassword
+	}
+
 	m.IPAddr = c.ClientIP()
 	m.CreatedBy = w.GetUsername()
 	if err := s.Create(); err != nil {
@@ -87,7 +95,7 @@ func CreateAdmin(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         m.ID,
-		"created_at": m.CreatedAt.Time,
+		"created_at": m.CreatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
 	w.Respond(nil, data)
@@ -121,6 +129,14 @@ func UpdateAdmin(c *gin.Context) {
 		return
 	}
 
+	if binding.Password != "" {
+		hashedPassword, err := utils.HashPassword(binding.Password)
+		if err != nil {
+			w.Respond(errs.InternalServerError(err.Error()), nil)
+		}
+		m.Password = hashedPassword
+	}
+
 	m.UpdatedBy = w.GetUsername()
 	if err := s.Save(); err != nil {
 		w.Respond(err, nil)
@@ -129,7 +145,7 @@ func UpdateAdmin(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         m.ID,
-		"updated_at": m.UpdatedAt.Time,
+		"updated_at": m.UpdatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
 	w.Respond(nil, data)

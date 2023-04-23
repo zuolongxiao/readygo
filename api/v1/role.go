@@ -5,6 +5,7 @@ import (
 
 	"readygo/models"
 	"readygo/pkg/errs"
+	"readygo/pkg/settings"
 	"readygo/services"
 	"readygo/utils"
 
@@ -57,7 +58,7 @@ func CreateRole(ctx *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         mdl.ID,
-		"created_at": mdl.CreatedAt.Time,
+		"created_at": mdl.CreatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
 	cw.Respond(nil, data)
@@ -93,7 +94,7 @@ func UpdateRole(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         m.ID,
-		"updated_at": m.UpdatedAt.Time,
+		"updated_at": m.UpdatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
 	w.Respond(nil, data)
@@ -215,7 +216,7 @@ func AddRolePermission(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         m.ID,
-		"updated_at": m.UpdatedAt.Time,
+		"updated_at": m.UpdatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
 	w.Respond(nil, data)

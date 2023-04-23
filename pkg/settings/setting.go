@@ -13,6 +13,7 @@ var App struct {
 	PageSize        uint32
 	SuperAdminID    uint64
 	RuntimeRootPath string
+	TimeFormat      string
 }
 
 // CORS
@@ -95,10 +96,12 @@ func Load() {
 	viper.SetDefault("App.PageSize", "20")
 	viper.SetDefault("App.RuntimeRootPath", "runtime/")
 	viper.SetDefault("App.SuperAdminID", "1")
+	viper.SetDefault("App.TimeFormat", "2006-01-02 15:04:05")
 	App.Name = viper.GetString("App.Name")
 	App.PageSize = viper.GetUint32("App.PageSize")
 	App.SuperAdminID = viper.GetUint64("App.SuperAdminID")
 	App.RuntimeRootPath = viper.GetString("App.RuntimeRootPath")
+	App.TimeFormat = viper.GetString("App.TimeFormat")
 
 	viper.SetDefault("CORS.AllowOrigin", "*")
 	viper.SetDefault("CORS.AllowMethods", "OPTIONS, GET, POST, PUT, DELETE")
