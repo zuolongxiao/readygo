@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -118,19 +117,9 @@ func (svc *Base) Find(o interface{}, c global.Queryer) error {
 		session = f.Filter(session, c)
 	}
 
-	minIdKey := "MIN(id)"
-	maxIdKey := "MAX(id)"
-	result := map[string]interface{}{}
-	session.Model(svc.model).Select(fmt.Sprintf("%s, %s", minIdKey, maxIdKey)).Take(result)
-	var minId uint64
-	var maxId uint64
-	if reflect.ValueOf(result[minIdKey]).IsValid() {
-		minId = uint64(reflect.ValueOf(result[minIdKey]).Int())
-	}
-	if reflect.ValueOf(result[maxIdKey]).IsValid() {
-		maxId = uint64(reflect.ValueOf(result[maxIdKey]).Int())
-	}
-	// fmt.Println(minId, maxId)
+	var minId, maxId uint64
+	row := session.Model(svc.model).Select("MIN(id)", "MAX(id)").Row()
+	row.Scan(&minId, &maxId)
 
 	if offset > 0 {
 		where := "id " + op + " ?"
