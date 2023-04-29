@@ -1,7 +1,6 @@
 package models
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"readygo/pkg/settings"
@@ -39,11 +38,11 @@ func (t *LocalTime) String() string {
 
 // Base base model
 type Base struct {
-	ID        uint64       `gorm:"type:uint;primaryKey"`
-	CreatedAt sql.NullTime `gorm:"type:timestamp"`
-	CreatedBy string       `gorm:"type:string;size:100;not null"`
-	UpdatedAt sql.NullTime `gorm:"type:timestamp"`
-	UpdatedBy string       `gorm:"type:string;size:100;not null"`
+	ID        uint64    `gorm:"type:uint;primaryKey"`
+	CreatedAt LocalTime `gorm:"type:timestamp"`
+	CreatedBy string    `gorm:"type:string;size:100;not null"`
+	UpdatedAt LocalTime `gorm:"type:timestamp"`
+	UpdatedBy string    `gorm:"type:string;size:100;not null"`
 }
 
 // Size implements services.Pager

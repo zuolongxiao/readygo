@@ -2,11 +2,11 @@ package api
 
 import (
 	"readygo/models"
-	"readygo/pkg/settings"
 	"readygo/services"
 	"readygo/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 )
 
 // ListPermissions ListPermissions
@@ -51,12 +51,10 @@ func CreatePermission(c *gin.Context) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"id":         mdl.ID,
-		"created_at": mdl.CreatedAt.Time.Format(settings.App.TimeFormat),
-	}
+	var view models.PermissionView
+	copier.Copy(&view, &mdl)
 
-	cw.Respond(nil, data)
+	cw.Respond(nil, view)
 }
 
 // UpdatePermission UpdatePermission
@@ -86,12 +84,10 @@ func UpdatePermission(c *gin.Context) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"id":         mdl.ID,
-		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
-	}
+	var view models.PermissionView
+	copier.Copy(&view, &mdl)
 
-	cw.Respond(nil, data)
+	cw.Respond(nil, view)
 }
 
 // DeletePermission DeletePermission

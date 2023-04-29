@@ -294,7 +294,7 @@ func (svc *Base) LoadByKey(key string, v interface{}) error {
 
 // Fill fill model
 func (svc *Base) Fill(o interface{}) error {
-	return copier.CopyWithOption(svc.model, o, copier.Option{IgnoreEmpty: true})
+	return copier.CopyWithOption(svc.model, o, copier.Option{IgnoreEmpty: false})
 }
 
 // Create Create
@@ -308,7 +308,7 @@ func (svc *Base) Create(cw global.IContextWrapper) error {
 func (svc *Base) Save(cw global.IContextWrapper) error {
 	mdl := reflect.ValueOf(svc.model).Elem()
 	mdl.FieldByName("UpdatedBy").SetString(cw.GetUsername())
-	return db.DB.Updates(svc.model).Error
+	return db.DB.Select("*").Updates(svc.model).Error
 }
 
 // Update Update

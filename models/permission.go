@@ -25,6 +25,7 @@ type PermissionView struct {
 	Name      string `json:"name"`
 	Title     string `json:"title"`
 	Group     string `json:"group"`
+	Note      string `json:"note"`
 	IsEnabled string `json:"is_enabled"`
 }
 

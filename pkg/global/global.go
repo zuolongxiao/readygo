@@ -10,7 +10,7 @@ type Queryer interface {
 	Query(string) string
 }
 
-// Contexter
+// IContextWrapper
 type IContextWrapper interface {
 	GetUsername() string
 }

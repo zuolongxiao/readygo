@@ -92,12 +92,10 @@ func CreateAdmin(c *gin.Context) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"id":         mdl.ID,
-		"created_at": mdl.CreatedAt.Time.Format(settings.App.TimeFormat),
-	}
+	var view models.AdminView
+	copier.Copy(&view, &mdl)
 
-	cw.Respond(nil, data)
+	cw.Respond(nil, view)
 }
 
 // UpdateAdmin UpdateAdmin
@@ -112,7 +110,7 @@ func UpdateAdmin(c *gin.Context) {
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 0)
 	if id == settings.App.SuperAdminID {
-		cw.Respond(errs.ForbiddenError("super admin cannot be modified"), nil)
+		cw.Respond(errs.ForbiddenError("super admin not allowed to change"), nil)
 		return
 	}
 
@@ -141,12 +139,10 @@ func UpdateAdmin(c *gin.Context) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"id":         mdl.ID,
-		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
-	}
+	var view models.AdminView
+	copier.Copy(&view, &mdl)
 
-	cw.Respond(nil, data)
+	cw.Respond(nil, view)
 }
 
 // DeleteAdmin DeleteAdmin
@@ -155,7 +151,7 @@ func DeleteAdmin(c *gin.Context) {
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 0)
 	if id == settings.App.SuperAdminID {
-		cw.Respond(errs.ForbiddenError("super admin cannot be deleted"), nil)
+		cw.Respond(errs.ForbiddenError("super admin role not allowed to delete"), nil)
 		return
 	}
 

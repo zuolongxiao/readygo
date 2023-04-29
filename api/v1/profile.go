@@ -5,7 +5,6 @@ import (
 
 	"readygo/models"
 	"readygo/pkg/errs"
-	"readygo/pkg/settings"
 	"readygo/services"
 	"readygo/utils"
 
@@ -26,8 +25,8 @@ func GetProfile(ctx *gin.Context) {
 	var profile models.ProfileView
 	profile.ID = adminMdl.ID
 	profile.Username = adminMdl.Username
-	profile.CreatedAt = models.LocalTime(adminMdl.CreatedAt.Time)
-	profile.UpdatedAt = models.LocalTime(adminMdl.UpdatedAt.Time)
+	profile.CreatedAt = adminMdl.CreatedAt
+	profile.UpdatedAt = adminMdl.UpdatedAt
 	profile.Roles = []string{}
 	if adminMdl.RoleID > 0 {
 		roleMdl := models.Role{}
@@ -82,7 +81,7 @@ func UpdateProfile(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         mdl.ID,
-		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
+		"updated_at": mdl.UpdatedAt,
 	}
 
 	cw.Respond(nil, data)

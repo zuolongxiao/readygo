@@ -1,4 +1,4 @@
-# All config options can be overwrote by ENV variables,
+# All config options can be overwritten by ENV variables,
 # For example: `Server.HTTPPort: 9331` the corresponding ENV variable can be set as: `export SERVER_HTTPPORT=9331`
 
 App:

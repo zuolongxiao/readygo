@@ -5,7 +5,6 @@ import (
 
 	"readygo/models"
 	"readygo/pkg/errs"
-	"readygo/pkg/settings"
 	"readygo/services"
 	"readygo/utils"
 
@@ -55,12 +54,10 @@ func CreateRole(ctx *gin.Context) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"id":         mdl.ID,
-		"created_at": mdl.CreatedAt.Time.Format(settings.App.TimeFormat),
-	}
+	var view models.RoleView
+	copier.Copy(&view, &mdl)
 
-	cw.Respond(nil, data)
+	cw.Respond(nil, view)
 }
 
 // UpdateRole update role
@@ -90,12 +87,10 @@ func UpdateRole(c *gin.Context) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"id":         mdl.ID,
-		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
-	}
+	var view models.RoleView
+	copier.Copy(&view, &mdl)
 
-	cw.Respond(nil, data)
+	cw.Respond(nil, view)
 }
 
 // DeleteRole delete role
@@ -213,10 +208,44 @@ func AddRolePermission(c *gin.Context) {
 
 	data := map[string]interface{}{
 		"id":         mdl.ID,
-		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
+		"updated_at": mdl.UpdatedAt,
 	}
 
 	cw.Respond(nil, data)
+}
+
+// DeleteRolePermission DeleteRolePermission
+func DeleteRolePermission(c *gin.Context) {
+	cw := utils.NewContextWrapper(c)
+
+	roleID, _ := strconv.ParseUint(c.Param("id"), 10, 0)
+	if roleID <= 0 {
+		cw.Respond(errs.ValidationError("invalid role ID"), nil)
+		return
+	}
+
+	permissionID, _ := strconv.ParseUint(c.Param("permissionID"), 10, 0)
+	if permissionID <= 0 {
+		cw.Respond(errs.ValidationError("invalid permission ID"), nil)
+		return
+	}
+
+	mdl := models.Authorization{
+		RoleID:       roleID,
+		PermissionID: permissionID,
+	}
+	svc := services.New(&mdl)
+	if err := svc.Load(); err != nil {
+		cw.Respond(err, nil)
+		return
+	}
+
+	if err := svc.Delete(); err != nil {
+		cw.Respond(err, nil)
+		return
+	}
+
+	cw.Respond(nil, nil)
 }
 
 // UpdateRolePermission UpdateRolePermission
@@ -298,40 +327,6 @@ func UpdateRolePermission(c *gin.Context) {
 		if err := svc.Create(cw); err != nil {
 			continue
 		}
-	}
-
-	cw.Respond(nil, nil)
-}
-
-// DeleteRolePermission DeleteRolePermission
-func DeleteRolePermission(c *gin.Context) {
-	cw := utils.NewContextWrapper(c)
-
-	roleID, _ := strconv.ParseUint(c.Param("id"), 10, 0)
-	if roleID <= 0 {
-		cw.Respond(errs.ValidationError("invalid role ID"), nil)
-		return
-	}
-
-	permissionID, _ := strconv.ParseUint(c.Param("permissionID"), 10, 0)
-	if permissionID <= 0 {
-		cw.Respond(errs.ValidationError("invalid permission ID"), nil)
-		return
-	}
-
-	mdl := models.Authorization{
-		RoleID:       roleID,
-		PermissionID: permissionID,
-	}
-	svc := services.New(&mdl)
-	if err := svc.Load(); err != nil {
-		cw.Respond(err, nil)
-		return
-	}
-
-	if err := svc.Delete(); err != nil {
-		cw.Respond(err, nil)
-		return
 	}
 
 	cw.Respond(nil, nil)

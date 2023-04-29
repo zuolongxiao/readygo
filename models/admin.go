@@ -90,6 +90,10 @@ func (mdl *Admin) BeforeSave(tx *gorm.DB) error {
 		return errs.DuplicatedError("admin.username")
 	}
 
+	if mdl.Password == "" {
+		tx.Omit("password")
+	}
+
 	return nil
 }
 
