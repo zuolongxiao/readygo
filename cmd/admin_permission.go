@@ -35,6 +35,8 @@ func loadPermissions() {
 		return
 	}
 
+	cw := EmptyContextWrapper{}
+
 	for _, v := range v1.Routes {
 		handler := runtime.FuncForPC(reflect.ValueOf(v.Handler).Pointer()).Name()
 		tmp := strings.Split(handler, ".")
@@ -50,16 +52,16 @@ func loadPermissions() {
 			isEnabled = "Y"
 		}
 
-		m := models.Permission{
+		mdl := models.Permission{
 			Name: name,
 		}
 
-		s := services.New(&m)
-		if err := s.Load(); err != nil {
+		svc := services.New(&mdl)
+		if err := svc.Load(); err != nil {
 			if _, ok := err.(errs.NotFoundError); ok {
-				m.Title = v.Desc
-				m.IsEnabled = isEnabled
-				if err := s.Create(); err != nil {
+				mdl.Title = v.Desc
+				mdl.IsEnabled = isEnabled
+				if err := svc.Create(cw); err != nil {
 					fmt.Printf("name: %s, create error: %s\n", name, err.Error())
 				} else {
 					fmt.Printf("name: %s, added\n", name)

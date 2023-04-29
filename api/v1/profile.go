@@ -42,49 +42,48 @@ func GetProfile(ctx *gin.Context) {
 
 // UpdateProfile UpdateProfile
 func UpdateProfile(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
 	binding := models.ProfileUpdate{}
-	if err := w.Bind(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := cw.Bind(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m := models.Admin{}
-	s := services.New(&m)
-	if err := s.LoadByKey("username", w.GetUsername()); err != nil {
-		w.Respond(err, nil)
+	mdl := models.Admin{}
+	svc := services.New(&mdl)
+	if err := svc.LoadByKey("username", cw.GetUsername()); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	if !utils.VerifyPassword(m.Password, binding.PasswordOld) {
-		w.Respond(errs.ValidationError("incorrect password"), nil)
+	if !utils.VerifyPassword(mdl.Password, binding.PasswordOld) {
+		cw.Respond(errs.ValidationError("incorrect password"), nil)
 		return
 	}
 
-	if err := s.Fill(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Fill(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	if binding.Password != "" {
 		hashedPassword, err := utils.HashPassword(binding.Password)
 		if err != nil {
-			w.Respond(errs.InternalServerError(err.Error()), nil)
+			cw.Respond(errs.InternalServerError(err.Error()), nil)
 		}
-		m.Password = hashedPassword
+		mdl.Password = hashedPassword
 	}
 
-	m.UpdatedBy = w.GetUsername()
-	if err := s.Save(); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Save(cw); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	data := map[string]interface{}{
-		"id":         m.ID,
-		"updated_at": m.UpdatedAt.Time.Format(settings.App.TimeFormat),
+		"id":         mdl.ID,
+		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }

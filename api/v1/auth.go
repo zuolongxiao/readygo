@@ -32,9 +32,8 @@ func Auth(c *gin.Context) {
 	}
 
 	admin := models.Admin{}
-	s := services.New(&admin)
-	if err := s.LoadByKey("username", au.Username); err != nil {
-		// w.Respond(err, nil)
+	svc := services.New(&admin)
+	if err := svc.LoadByKey("username", au.Username); err != nil {
 		cw.Respond(errs.ValidationError("incorrect username or password"), nil)
 		return
 	}
@@ -97,7 +96,7 @@ func Auth(c *gin.Context) {
 		Time:  time.Now(),
 		Valid: true,
 	}
-	s.Update("LastLoginIP", "LastLoginAt")
+	svc.Update(cw, "LastLoginIP", "LastLoginAt")
 
 	nowTime := time.Now()
 	expireTime := nowTime.Add(settings.JWT.Expires)

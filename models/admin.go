@@ -71,11 +71,11 @@ type ProfileUpdate struct {
 }
 
 // BeforeSave hook
-func (m *Admin) BeforeSave(tx *gorm.DB) error {
+func (mdl *Admin) BeforeSave(tx *gorm.DB) error {
 	var count int64
 
-	if m.RoleID != 0 {
-		if err := tx.Model(&Role{}).Where("id = ?", m.RoleID).Limit(1).Count(&count).Error; err != nil {
+	if mdl.RoleID != 0 {
+		if err := tx.Model(&Role{}).Where("id = ?", mdl.RoleID).Limit(1).Count(&count).Error; err != nil {
 			return errs.DBError(err.Error())
 		}
 		if count == 0 {
@@ -83,7 +83,7 @@ func (m *Admin) BeforeSave(tx *gorm.DB) error {
 		}
 	}
 
-	if err := tx.Model(m).Where("id <> ? AND username = ?", m.ID, m.Username).Limit(1).Count(&count).Error; err != nil {
+	if err := tx.Model(mdl).Where("id <> ? AND username = ?", mdl.ID, mdl.Username).Limit(1).Count(&count).Error; err != nil {
 		return errs.DBError(err.Error())
 	}
 	if count > 0 {
@@ -94,7 +94,7 @@ func (m *Admin) BeforeSave(tx *gorm.DB) error {
 }
 
 // Filter filter
-func (m *Admin) Filter(db *gorm.DB, c global.Queryer) *gorm.DB {
+func (mdl *Admin) Filter(db *gorm.DB, c global.Queryer) *gorm.DB {
 	if username := c.Query("username"); username != "" {
 		db = db.Where("username LIKE ?", username+"%")
 	}

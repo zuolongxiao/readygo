@@ -64,7 +64,8 @@ func createAdmin(username, password string) error {
 		Username: username,
 		Password: hashedPassword,
 	}
-	s := services.New(&admin)
+	svc := services.New(&admin)
 
-	return s.Create()
+	cw := EmptyContextWrapper{}
+	return svc.Create(cw)
 }

@@ -47,9 +47,9 @@ type PermissionUpdate struct {
 }
 
 // BeforeSave hook
-func (m *Permission) BeforeSave(tx *gorm.DB) error {
+func (mdl *Permission) BeforeSave(tx *gorm.DB) error {
 	var count int64
-	if err := tx.Model(m).Where("id <> ? AND name = ?", m.ID, m.Name).Limit(1).Count(&count).Error; err != nil {
+	if err := tx.Model(mdl).Where("id <> ? AND name = ?", mdl.ID, mdl.Name).Limit(1).Count(&count).Error; err != nil {
 		return errs.DBError(err.Error())
 	}
 
@@ -61,10 +61,10 @@ func (m *Permission) BeforeSave(tx *gorm.DB) error {
 }
 
 // BeforeDelete hook
-func (m *Permission) BeforeDelete(tx *gorm.DB) error {
+func (mdl *Permission) BeforeDelete(tx *gorm.DB) error {
 	var count int64
 
-	if err := tx.Model(&Authorization{}).Where("permission_id = ?", m.ID).Limit(1).Count(&count).Error; err != nil {
+	if err := tx.Model(&Authorization{}).Where("permission_id = ?", mdl.ID).Limit(1).Count(&count).Error; err != nil {
 		return errs.DBError(err.Error())
 	}
 	if count > 0 {
@@ -85,7 +85,7 @@ func (*Permission) Filter(db *gorm.DB, c global.Queryer) *gorm.DB {
 	}
 
 	if group := c.Query("group"); group != "" {
-		db = db.Where("group = ?", group)
+		db = db.Where("`group` = ?", group)
 	}
 
 	return db

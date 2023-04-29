@@ -13,7 +13,7 @@ import (
 // Authorize check permissions
 func Authorize() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		w := utils.NewContextWrapper(c)
+		cw := utils.NewContextWrapper(c)
 
 		handler := c.HandlerName()
 		tmp := strings.Split(handler, ".")
@@ -25,7 +25,7 @@ func Authorize() gin.HandlerFunc {
 			return
 		}
 
-		ps := w.GetPermissions()
+		ps := cw.GetPermissions()
 		if utils.StrInSlice("*", ps) {
 			c.Next()
 			return
@@ -36,6 +36,6 @@ func Authorize() gin.HandlerFunc {
 			return
 		}
 
-		w.RespondAndAbort(errs.ForbiddenError(name), nil)
+		cw.RespondAndAbort(errs.ForbiddenError(name), nil)
 	}
 }

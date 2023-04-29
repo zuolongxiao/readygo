@@ -25,28 +25,28 @@ func Authenticate() gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		w := utils.NewContextWrapper(c)
+		cw := utils.NewContextWrapper(c)
 
 		header := c.GetHeader(TokenHeader)
 		if len(header) < len(TokenType)+1 {
-			w.RespondAndAbort(errs.UnauthorizedError("missing token"), nil)
+			cw.RespondAndAbort(errs.UnauthorizedError("missing token"), nil)
 			return
 		}
 
 		token := header[len(TokenType)+1:]
 		if token == "" {
-			w.RespondAndAbort(errs.UnauthorizedError("missing token"), nil)
+			cw.RespondAndAbort(errs.UnauthorizedError("missing token"), nil)
 			return
 		}
 
 		claims, err := utils.ParseToken(token)
 		if err != nil {
-			w.RespondAndAbort(err, nil)
+			cw.RespondAndAbort(err, nil)
 			return
 		}
 
-		w.SetUsername(claims.Username)
-		w.SetPermissions(claims.Permissions)
+		cw.SetUsername(claims.Username)
+		cw.SetPermissions(claims.Permissions)
 		c.Next()
 	}
 }

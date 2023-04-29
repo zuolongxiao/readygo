@@ -34,16 +34,16 @@ type response struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
-func (w *ContextWrapper) respond(err error, data interface{}, abort bool) {
+func (cw *ContextWrapper) respond(err error, data interface{}, abort bool) {
 	if err == nil {
-		w.ctx.JSON(http.StatusOK, response{
+		cw.ctx.JSON(http.StatusOK, response{
 			Code:    successCode,
 			Message: successMessage,
 			Data:    data,
 		})
 
 		if abort {
-			w.ctx.Abort()
+			cw.ctx.Abort()
 		}
 
 		return
@@ -56,49 +56,49 @@ func (w *ContextWrapper) respond(err error, data interface{}, abort bool) {
 		statusCode = e.StatusCode()
 	}
 
-	w.ctx.JSON(statusCode, response{
+	cw.ctx.JSON(statusCode, response{
 		Code:    errorCode,
 		Message: err.Error(),
 		Data:    data,
 	})
 
 	if abort {
-		w.ctx.Abort()
+		cw.ctx.Abort()
 	}
 }
 
 // Respond send response
-func (w *ContextWrapper) Respond(err error, data interface{}) {
-	w.respond(err, data, false)
+func (cw *ContextWrapper) Respond(err error, data interface{}) {
+	cw.respond(err, data, false)
 }
 
 // RespondAndAbort send response and abort
-func (w *ContextWrapper) RespondAndAbort(err error, data interface{}) {
-	w.respond(err, data, true)
+func (cw *ContextWrapper) RespondAndAbort(err error, data interface{}) {
+	cw.respond(err, data, true)
 }
 
 // SetUsername set username to context
-func (w *ContextWrapper) SetUsername(username string) {
-	w.ctx.Set(usernameKey, username)
+func (cw *ContextWrapper) SetUsername(username string) {
+	cw.ctx.Set(usernameKey, username)
 }
 
 // GetUsername get username from context
-func (w *ContextWrapper) GetUsername() string {
-	return w.ctx.GetString(usernameKey)
+func (cw *ContextWrapper) GetUsername() string {
+	return cw.ctx.GetString(usernameKey)
 }
 
 // SetPermissions set permissions to context
-func (w *ContextWrapper) SetPermissions(permissions []string) {
-	w.ctx.Set(permissionsKey, permissions)
+func (cw *ContextWrapper) SetPermissions(permissions []string) {
+	cw.ctx.Set(permissionsKey, permissions)
 }
 
 // GetPermissions get permissions from context
-func (w *ContextWrapper) GetPermissions() []string {
-	return w.ctx.GetStringSlice(permissionsKey)
+func (cw *ContextWrapper) GetPermissions() []string {
+	return cw.ctx.GetStringSlice(permissionsKey)
 }
 
 // Bind bind and validate
-func (w *ContextWrapper) Bind(o interface{}) error {
+func (cw *ContextWrapper) Bind(o interface{}) error {
 	formats := map[string]string{
 		"required": "%s is required",
 		"oneof":    "%s must be one of %s",
@@ -108,7 +108,7 @@ func (w *ContextWrapper) Bind(o interface{}) error {
 		"eqfield":  "%s is not matched",
 	}
 
-	if err := w.ctx.ShouldBindJSON(o); err != nil {
+	if err := cw.ctx.ShouldBindJSON(o); err != nil {
 		var validationErr validator.ValidationErrors
 		if errors.As(err, &validationErr) {
 			var errmsg string

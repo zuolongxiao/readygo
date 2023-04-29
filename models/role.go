@@ -32,9 +32,9 @@ type RoleUpdate struct {
 }
 
 // BeforeSave hook
-func (m *Role) BeforeSave(tx *gorm.DB) error {
+func (mdl *Role) BeforeSave(tx *gorm.DB) error {
 	var count int64
-	if err := tx.Model(m).Where("id <> ? AND name = ?", m.ID, m.Name).Limit(1).Count(&count).Error; err != nil {
+	if err := tx.Model(mdl).Where("id <> ? AND name = ?", mdl.ID, mdl.Name).Limit(1).Count(&count).Error; err != nil {
 		return errs.DBError(err.Error())
 	}
 
@@ -46,17 +46,17 @@ func (m *Role) BeforeSave(tx *gorm.DB) error {
 }
 
 // BeforeDelete hook
-func (m *Role) BeforeDelete(tx *gorm.DB) error {
+func (mdl *Role) BeforeDelete(tx *gorm.DB) error {
 	var count int64
 
-	if err := tx.Model(&Admin{}).Where("role_id = ?", m.ID).Limit(1).Count(&count).Error; err != nil {
+	if err := tx.Model(&Admin{}).Where("role_id = ?", mdl.ID).Limit(1).Count(&count).Error; err != nil {
 		return errs.DBError(err.Error())
 	}
 	if count > 0 {
 		return errs.ReferenceRestrictError("role has been referenced by admin")
 	}
 
-	if err := tx.Model(&Authorization{}).Where("role_id = ?", m.ID).Limit(1).Count(&count).Error; err != nil {
+	if err := tx.Model(&Authorization{}).Where("role_id = ?", mdl.ID).Limit(1).Count(&count).Error; err != nil {
 		return errs.DBError(err.Error())
 	}
 	if count > 0 {

@@ -17,12 +17,12 @@ type permission struct {
 var ps = permission{}
 
 func (p *permission) set() {
-	s := services.New(&models.Permission{})
+	svc := services.New(&models.Permission{})
 	var list []models.PermissionView
 	conds := map[string]interface{}{
 		"is_enabled": "Y",
 	}
-	if err := s.GetRows(&list, conds); err != nil {
+	if err := svc.GetRows(&list, conds); err != nil {
 		return
 	}
 

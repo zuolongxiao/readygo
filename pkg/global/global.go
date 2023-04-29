@@ -9,3 +9,8 @@ const Email = "zuolongxiao@gmail.com"
 type Queryer interface {
 	Query(string) string
 }
+
+// Contexter
+type IContextWrapper interface {
+	GetUsername() string
+}

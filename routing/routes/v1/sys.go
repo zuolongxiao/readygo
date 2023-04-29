@@ -85,6 +85,13 @@ var sys = []routes.Route{
 		Desc:    "Add permission to role",
 	},
 	{
+		Method:  "PUT",
+		Pattern: "/roles/:id/permissions",
+		Handler: apiv1.UpdateRolePermission,
+		Flag:    "Y",
+		Desc:    "Update permissions of a role",
+	},
+	{
 		Method:  "GET",
 		Pattern: "/roles/:id/permissions",
 		Handler: apiv1.ListRolePermissions,

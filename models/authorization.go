@@ -37,19 +37,19 @@ type AuthorizationPermission struct {
 }
 
 // BeforeSave hook
-func (m *Authorization) BeforeSave(tx *gorm.DB) error {
+func (mdl *Authorization) BeforeSave(tx *gorm.DB) error {
 	var count int64
 
-	if m.RoleID > 0 {
-		if err := tx.Model(&Role{}).Where("id = ?", m.RoleID).Limit(1).Count(&count).Error; err != nil {
+	if mdl.RoleID > 0 {
+		if err := tx.Model(&Role{}).Where("id = ?", mdl.RoleID).Limit(1).Count(&count).Error; err != nil {
 			return errs.DBError(err.Error())
 		}
 		if count == 0 {
 			return errs.ValidationError("role does not exist")
 		}
 	}
-	if m.PermissionID > 0 {
-		if err := tx.Model(&Permission{}).Where("id = ?", m.PermissionID).Limit(1).Count(&count).Error; err != nil {
+	if mdl.PermissionID > 0 {
+		if err := tx.Model(&Permission{}).Where("id = ?", mdl.PermissionID).Limit(1).Count(&count).Error; err != nil {
 			return errs.DBError(err.Error())
 		}
 		if count == 0 {
@@ -57,8 +57,8 @@ func (m *Authorization) BeforeSave(tx *gorm.DB) error {
 		}
 	}
 
-	if m.RoleID > 0 && m.PermissionID > 0 {
-		if err := tx.Model(m).Where("role_id = ? AND permission_id = ?", m.RoleID, m.PermissionID).Limit(1).Count(&count).Error; err != nil {
+	if mdl.RoleID > 0 && mdl.PermissionID > 0 {
+		if err := tx.Model(mdl).Where("role_id = ? AND permission_id = ?", mdl.RoleID, mdl.PermissionID).Limit(1).Count(&count).Error; err != nil {
 			return errs.DBError(err.Error())
 		}
 		if count > 0 {
@@ -71,11 +71,11 @@ func (m *Authorization) BeforeSave(tx *gorm.DB) error {
 
 // Filter filter
 func (*Authorization) Filter(db *gorm.DB, c global.Queryer) *gorm.DB {
-	if roleID, _ := strconv.Atoi(c.Query("role_id")); roleID > 0 {
+	if roleID, _ := strconv.ParseUint(c.Query("role_id"), 10, 0); roleID > 0 {
 		db = db.Where("role_id = ?", roleID)
 	}
 
-	if permissionID, _ := strconv.Atoi(c.Query("permission_id")); permissionID > 0 {
+	if permissionID, _ := strconv.ParseUint(c.Query("permission_id"), 10, 0); permissionID > 0 {
 		db = db.Where("permission_id = ?", permissionID)
 	}
 

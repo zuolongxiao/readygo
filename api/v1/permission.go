@@ -11,105 +11,103 @@ import (
 
 // ListPermissions ListPermissions
 func ListPermissions(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
-	s := services.New(&models.Permission{})
+	cw := utils.NewContextWrapper(c)
+	svc := services.New(&models.Permission{})
 
 	var list []models.PermissionView
-	if err := s.Find(&list, c); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Find(&list, c); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	data := map[string]interface{}{
 		"list": list,
-		"prev": s.GetPrev(),
-		"next": s.GetNext(),
+		"prev": svc.GetPrev(),
+		"next": svc.GetNext(),
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }
 
 // CreatePermission CreatePermission
 func CreatePermission(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
 	binding := models.PermissionCreate{}
-	if err := w.Bind(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := cw.Bind(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m := models.Permission{}
-	s := services.New(&m)
-	if err := s.Fill(&binding); err != nil {
-		w.Respond(err, nil)
+	mdl := models.Permission{}
+	svc := services.New(&mdl)
+	if err := svc.Fill(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m.CreatedBy = w.GetUsername()
-	if err := s.Create(); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Create(cw); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	data := map[string]interface{}{
-		"id":         m.ID,
-		"created_at": m.CreatedAt.Time.Format(settings.App.TimeFormat),
+		"id":         mdl.ID,
+		"created_at": mdl.CreatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }
 
 // UpdatePermission UpdatePermission
 func UpdatePermission(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
 	binding := models.PermissionUpdate{}
-	if err := w.Bind(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := cw.Bind(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m := models.Permission{}
-	s := services.New(&m)
-	if err := s.LoadByID(c.Param("id")); err != nil {
-		w.Respond(err, nil)
+	mdl := models.Permission{}
+	svc := services.New(&mdl)
+	if err := svc.LoadByID(c.Param("id")); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	if err := s.Fill(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Fill(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m.UpdatedBy = w.GetUsername()
-	if err := s.Save(); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Save(cw); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	data := map[string]interface{}{
-		"id":         m.ID,
-		"updated_at": m.UpdatedAt.Time.Format(settings.App.TimeFormat),
+		"id":         mdl.ID,
+		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }
 
 // DeletePermission DeletePermission
 func DeletePermission(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
-	s := services.New(&models.Permission{})
-	if err := s.LoadByID(c.Param("id")); err != nil {
-		w.Respond(err, nil)
+	svc := services.New(&models.Permission{})
+	if err := svc.LoadByID(c.Param("id")); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	if err := s.Delete(); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Delete(); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	w.Respond(nil, nil)
+	cw.Respond(nil, nil)
 }

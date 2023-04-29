@@ -44,14 +44,13 @@ func CreateRole(ctx *gin.Context) {
 	}
 
 	var mdl models.Role
-	s := services.New(&mdl)
-	if err := s.Fill(&binding); err != nil {
+	svc := services.New(&mdl)
+	if err := svc.Fill(&binding); err != nil {
 		cw.Respond(err, nil)
 		return
 	}
 
-	mdl.CreatedBy = cw.GetUsername()
-	if err := s.Create(); err != nil {
+	if err := svc.Create(cw); err != nil {
 		cw.Respond(err, nil)
 		return
 	}
@@ -66,72 +65,71 @@ func CreateRole(ctx *gin.Context) {
 
 // UpdateRole update role
 func UpdateRole(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
 	binding := models.RoleUpdate{}
-	if err := w.Bind(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := cw.Bind(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m := models.Role{}
-	s := services.New(&m)
-	if err := s.LoadByID(c.Param("id")); err != nil {
-		w.Respond(err, nil)
+	mdl := models.Role{}
+	svc := services.New(&mdl)
+	if err := svc.LoadByID(c.Param("id")); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	if err := s.Fill(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Fill(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m.UpdatedBy = w.GetUsername()
-	if err := s.Save(); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Save(cw); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	data := map[string]interface{}{
-		"id":         m.ID,
-		"updated_at": m.UpdatedAt.Time.Format(settings.App.TimeFormat),
+		"id":         mdl.ID,
+		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }
 
 // DeleteRole delete role
 func DeleteRole(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
-	s := services.New(&models.Role{})
-	if err := s.LoadByID(c.Param("id")); err != nil {
-		w.Respond(err, nil)
+	svc := services.New(&models.Role{})
+	if err := svc.LoadByID(c.Param("id")); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	if err := s.Delete(); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Delete(); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	w.Respond(nil, nil)
+	cw.Respond(nil, nil)
 }
 
 // ListRolePermissions ListRolePermissions
 func ListRolePermissions(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
-	roleID, _ := strconv.Atoi(c.Param("id"))
+	roleID, _ := strconv.ParseUint(c.Param("id"), 10, 0)
 	if roleID <= 0 {
-		w.Respond(errs.ValidationError("invalid role ID"), nil)
+		cw.Respond(errs.ValidationError("invalid role ID"), nil)
 		return
 	}
 
 	roleModel := models.Role{}
 	roleSvc := services.New(&roleModel)
 	if err := roleSvc.LoadByID(c.Param("id")); err != nil {
-		w.Respond(err, nil)
+		cw.Respond(err, nil)
 		return
 	}
 
@@ -143,7 +141,7 @@ func ListRolePermissions(c *gin.Context) {
 	svc := services.New(&models.Authorization{})
 	var rolePermList []models.AuthorizationView
 	if err := svc.Find(&rolePermList, &kvQueryer); err != nil {
-		w.Respond(err, nil)
+		cw.Respond(err, nil)
 		return
 	}
 
@@ -154,7 +152,7 @@ func ListRolePermissions(c *gin.Context) {
 	permSvc := services.New(&models.Permission{})
 	var permList []models.RoleView
 	if err := permSvc.Find(&permList, &permIDsQueryer); err != nil {
-		w.Respond(err, nil)
+		cw.Respond(err, nil)
 		return
 	}
 	permNameDict := make(map[uint64]string)
@@ -166,7 +164,7 @@ func ListRolePermissions(c *gin.Context) {
 		RoleName       string `json:"role_name"`
 		PermissionName string `json:"permission_name"`
 	}
-	var lst []List
+	lst := []List{}
 	for _, row := range rolePermList {
 		dst := List{}
 		copier.CopyWithOption(&dst, row, copier.Option{IgnoreEmpty: true})
@@ -181,77 +179,160 @@ func ListRolePermissions(c *gin.Context) {
 		"next": svc.GetNext(),
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
 }
 
 // AddRolePermission AddRolePermission
 func AddRolePermission(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
-	roleID, _ := strconv.Atoi(c.Param("id"))
+	roleID, _ := strconv.ParseUint(c.Param("id"), 10, 0)
 	if roleID <= 0 {
-		w.Respond(errs.ValidationError("invalid role ID"), nil)
+		cw.Respond(errs.ValidationError("invalid role ID"), nil)
 		return
 	}
 
 	binding := models.AuthorizationBinding{}
-	if err := w.Bind(&binding); err != nil {
-		w.Respond(err, nil)
+	if err := cw.Bind(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m := models.Authorization{}
-	s := services.New(&m)
-	if err := s.Fill(&binding); err != nil {
-		w.Respond(err, nil)
+	mdl := models.Authorization{}
+	svc := services.New(&mdl)
+	if err := svc.Fill(&binding); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	m.RoleID = uint64(roleID)
-	m.CreatedBy = w.GetUsername()
-	if err := s.Create(); err != nil {
-		w.Respond(err, nil)
+	mdl.RoleID = roleID
+	if err := svc.Create(cw); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
 	data := map[string]interface{}{
-		"id":         m.ID,
-		"updated_at": m.UpdatedAt.Time.Format(settings.App.TimeFormat),
+		"id":         mdl.ID,
+		"updated_at": mdl.UpdatedAt.Time.Format(settings.App.TimeFormat),
 	}
 
-	w.Respond(nil, data)
+	cw.Respond(nil, data)
+}
+
+// UpdateRolePermission UpdateRolePermission
+func UpdateRolePermission(c *gin.Context) {
+	cw := utils.NewContextWrapper(c)
+
+	roleID, _ := strconv.ParseUint(c.Param("id"), 10, 0)
+	if roleID <= 0 {
+		cw.Respond(errs.ValidationError("invalid role ID"), nil)
+		return
+	}
+
+	binding := make(map[string][]uint64)
+	if err := cw.Bind(&binding); err != nil {
+		cw.Respond(err, nil)
+		return
+	}
+	bindingPermissionIDs, ok := binding["permission_ids"]
+	if !ok {
+		cw.Respond(errs.ValidationError("missing permission_ids"), nil)
+		return
+	}
+	bindingPermissionIDs = utils.RemoveDuplicate(bindingPermissionIDs)
+
+	roleModel := models.Role{}
+	roleSvc := services.New(&roleModel)
+	if err := roleSvc.LoadByID(c.Param("id")); err != nil {
+		cw.Respond(err, nil)
+		return
+	}
+
+	kvQueryer := models.KeyValueQueryer{
+		Entries: map[string]string{
+			"role_id": c.Param("id"),
+		},
+	}
+	svc := services.New(&models.Authorization{})
+	var rolePermList []models.AuthorizationView
+	if err := svc.Find(&rolePermList, &kvQueryer); err != nil {
+		cw.Respond(err, nil)
+		return
+	}
+
+	permissionIDs := []uint64{}
+	for _, auth := range rolePermList {
+		permissionIDs = append(permissionIDs, auth.PermissionID)
+	}
+
+	addPermissionIDs := utils.Difference(bindingPermissionIDs, permissionIDs)
+	subPermissionIDs := utils.Difference(permissionIDs, bindingPermissionIDs)
+
+	// db.DB.Delete(&models.Authorization{}, "role_id = ? AND permission_id IN ?", roleID, subPermissionIds)
+	for _, permissionID := range subPermissionIDs {
+		mdl := models.Authorization{
+			RoleID:       roleID,
+			PermissionID: permissionID,
+		}
+		svc := services.New(&mdl)
+		if err := svc.Load(); err != nil {
+			continue
+		}
+		if err := svc.Delete(); err != nil {
+			continue
+		}
+	}
+
+	for _, permissionID := range addPermissionIDs {
+		mdl := models.Authorization{}
+		svc := services.New(&mdl)
+		binding := models.AuthorizationBinding{
+			RoleID:       roleID,
+			PermissionID: permissionID,
+		}
+
+		if err := svc.Fill(&binding); err != nil {
+			continue
+		}
+
+		if err := svc.Create(cw); err != nil {
+			continue
+		}
+	}
+
+	cw.Respond(nil, nil)
 }
 
 // DeleteRolePermission DeleteRolePermission
 func DeleteRolePermission(c *gin.Context) {
-	w := utils.NewContextWrapper(c)
+	cw := utils.NewContextWrapper(c)
 
-	roleID, _ := strconv.Atoi(c.Param("id"))
+	roleID, _ := strconv.ParseUint(c.Param("id"), 10, 0)
 	if roleID <= 0 {
-		w.Respond(errs.ValidationError("invalid role ID"), nil)
+		cw.Respond(errs.ValidationError("invalid role ID"), nil)
 		return
 	}
 
-	permissionID, _ := strconv.Atoi(c.Param("permissionID"))
+	permissionID, _ := strconv.ParseUint(c.Param("permissionID"), 10, 0)
 	if permissionID <= 0 {
-		w.Respond(errs.ValidationError("invalid permission ID"), nil)
+		cw.Respond(errs.ValidationError("invalid permission ID"), nil)
 		return
 	}
 
-	m := models.Authorization{
-		RoleID:       uint64(roleID),
-		PermissionID: uint64(permissionID),
+	mdl := models.Authorization{
+		RoleID:       roleID,
+		PermissionID: permissionID,
 	}
-	s := services.New(&m)
-	if err := s.Load(); err != nil {
-		w.Respond(err, nil)
+	svc := services.New(&mdl)
+	if err := svc.Load(); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	if err := s.Delete(); err != nil {
-		w.Respond(err, nil)
+	if err := svc.Delete(); err != nil {
+		cw.Respond(err, nil)
 		return
 	}
 
-	w.Respond(nil, nil)
+	cw.Respond(nil, nil)
 }

@@ -65,8 +65,8 @@ type IDsQueryer struct {
 }
 
 // Query implements global.queryer
-func (q *IDsQueryer) Query(s string) string {
-	if s != "IDs" {
+func (q *IDsQueryer) Query(qs string) string {
+	if qs != "IDs" {
 		return ""
 	}
 	m := make(map[string]bool)

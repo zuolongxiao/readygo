@@ -34,12 +34,12 @@ type Base struct {
 }
 
 // New new service
-func New(m interface{}) *Base {
-	return &Base{model: m}
+func New(mdl interface{}) *Base {
+	return &Base{model: mdl}
 }
 
 // Find Find
-func (s *Base) Find(o interface{}, c global.Queryer) error {
+func (svc *Base) Find(o interface{}, c global.Queryer) error {
 	sort := c.Query("sort") // +id or -id
 	dir := c.Query("dir")   // next or prev
 	size, _ := strconv.Atoi(c.Query("size"))
@@ -96,7 +96,7 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 	order := field + " " + sortDir
 
 	pageSize := 20
-	if p, ok := s.model.(Pager); ok {
+	if p, ok := svc.model.(Pager); ok {
 		pageSize = p.Size()
 	}
 
@@ -114,14 +114,14 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 		session = session.Where("id IN ?", ids)
 	}
 
-	if f, ok := s.model.(Filterer); ok {
+	if f, ok := svc.model.(Filterer); ok {
 		session = f.Filter(session, c)
 	}
 
 	minIdKey := "MIN(id)"
 	maxIdKey := "MAX(id)"
 	result := map[string]interface{}{}
-	session.Model(s.model).Select(fmt.Sprintf("%s, %s", minIdKey, maxIdKey)).Take(result)
+	session.Model(svc.model).Select(fmt.Sprintf("%s, %s", minIdKey, maxIdKey)).Take(result)
 	var minId uint64
 	var maxId uint64
 	if reflect.ValueOf(result[minIdKey]).IsValid() {
@@ -137,7 +137,7 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 		session = session.Where(where, offset)
 	}
 
-	err := session.Model(s.model).Select("*").Order(order).Limit(size).Find(o).Error
+	err := session.Model(svc.model).Select("*").Order(order).Limit(size).Find(o).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// return errs.NotFoundError(err.Error())
@@ -156,22 +156,22 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 		first := v.Index(0).FieldByName("ID").Uint()
 		last := v.Index(len - 1).FieldByName("ID").Uint()
 		if offset == 0 && len < size {
-			s.next = 0
-			s.prev = 0
+			svc.next = 0
+			svc.prev = 0
 		} else {
 			if sym == "+" {
 				if last < maxId {
-					s.next = last
+					svc.next = last
 				}
 				if first > minId {
-					s.prev = first
+					svc.prev = first
 				}
 			} else {
 				if last > minId {
-					s.next = last
+					svc.next = last
 				}
 				if first < maxId {
-					s.prev = first
+					svc.prev = first
 				}
 			}
 		}
@@ -181,10 +181,10 @@ func (s *Base) Find(o interface{}, c global.Queryer) error {
 }
 
 // Get get row
-func (s *Base) Get(o interface{}, cond interface{}) error {
-	err := db.DB.Model(s.model).Where(cond).First(o).Error
+func (svc *Base) Get(o interface{}, cond interface{}) error {
+	err := db.DB.Model(svc.model).Where(cond).First(o).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		typ := s.getTypeName()
+		typ := svc.getTypeName()
 		return errs.NotFoundError(typ)
 	}
 
@@ -196,8 +196,8 @@ func (s *Base) Get(o interface{}, cond interface{}) error {
 }
 
 // GetRows get rows
-func (s *Base) GetRows(o interface{}, cond interface{}) error {
-	err := db.DB.Model(s.model).Where(cond).Find(o).Error
+func (svc *Base) GetRows(o interface{}, cond interface{}) error {
+	err := db.DB.Model(svc.model).Where(cond).Find(o).Error
 	if err != nil {
 		return errs.DBError(err.Error())
 	}
@@ -206,15 +206,15 @@ func (s *Base) GetRows(o interface{}, cond interface{}) error {
 }
 
 // GetByID GetByID
-func (s *Base) GetByID(o interface{}, vs string) error {
-	id, _ := strconv.Atoi(vs)
+func (svc *Base) GetByID(o interface{}, qs string) error {
+	id, _ := strconv.ParseUint(qs, 10, 0)
 	if id <= 0 {
 		return errs.ValidationError("invalid ID")
 	}
 
-	err := db.DB.Model(s.model).Where("id = ?", id).First(o).Error
+	err := db.DB.Model(svc.model).Where("id = ?", id).First(o).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		typ := s.getTypeName()
+		typ := svc.getTypeName()
 		return errs.NotFoundError(typ)
 	}
 
@@ -226,11 +226,11 @@ func (s *Base) GetByID(o interface{}, vs string) error {
 }
 
 // GetByKey GetByKey
-func (s *Base) GetByKey(o interface{}, k string, v interface{}) error {
+func (svc *Base) GetByKey(o interface{}, k string, v interface{}) error {
 	where := k + " = ?"
-	err := db.DB.Model(s.model).Where(where, v).First(o).Error
+	err := db.DB.Model(svc.model).Where(where, v).First(o).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		typ := s.getTypeName()
+		typ := svc.getTypeName()
 		return errs.NotFoundError(typ)
 	}
 
@@ -242,10 +242,10 @@ func (s *Base) GetByKey(o interface{}, k string, v interface{}) error {
 }
 
 // Load get and fill the model
-func (s *Base) Load() error {
-	err := db.DB.Model(s.model).Where(s.model).Take(s.model).Error
+func (svc *Base) Load() error {
+	err := db.DB.Model(svc.model).Where(svc.model).Take(svc.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		typ := s.getTypeName()
+		typ := svc.getTypeName()
 		return errs.NotFoundError(typ)
 	}
 
@@ -257,15 +257,15 @@ func (s *Base) Load() error {
 }
 
 // LoadByID get and fill the model
-func (s *Base) LoadByID(vs string) error {
-	id, _ := strconv.Atoi(vs)
+func (svc *Base) LoadByID(qs string) error {
+	id, _ := strconv.ParseUint(qs, 10, 0)
 	if id <= 0 {
 		return errs.ValidationError("invalid ID")
 	}
 
-	err := db.DB.Model(s.model).Where("id = ?", id).First(s.model).Error
+	err := db.DB.Model(svc.model).Where("id = ?", id).First(svc.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		typ := s.getTypeName()
+		typ := svc.getTypeName()
 		return errs.NotFoundError(typ)
 	}
 
@@ -277,11 +277,11 @@ func (s *Base) LoadByID(vs string) error {
 }
 
 // LoadByKey LoadByKey
-func (s *Base) LoadByKey(key string, v interface{}) error {
+func (svc *Base) LoadByKey(key string, v interface{}) error {
 	where := key + " = ?"
-	err := db.DB.Model(s.model).Where(where, v).First(s.model).Error
+	err := db.DB.Model(svc.model).Where(where, v).First(svc.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		typ := s.getTypeName()
+		typ := svc.getTypeName()
 		return errs.NotFoundError(typ)
 	}
 
@@ -293,30 +293,36 @@ func (s *Base) LoadByKey(key string, v interface{}) error {
 }
 
 // Fill fill model
-func (s *Base) Fill(o interface{}) error {
-	return copier.CopyWithOption(s.model, o, copier.Option{IgnoreEmpty: true})
+func (svc *Base) Fill(o interface{}) error {
+	return copier.CopyWithOption(svc.model, o, copier.Option{IgnoreEmpty: true})
 }
 
 // Create Create
-func (s *Base) Create() error {
-	return db.DB.Create(s.model).Error
+func (svc *Base) Create(cw global.IContextWrapper) error {
+	mdl := reflect.ValueOf(svc.model).Elem()
+	mdl.FieldByName("CreatedBy").SetString(cw.GetUsername())
+	return db.DB.Create(svc.model).Error
 }
 
 // Save Save
-func (s *Base) Save() error {
-	return db.DB.Updates(s.model).Error
+func (svc *Base) Save(cw global.IContextWrapper) error {
+	mdl := reflect.ValueOf(svc.model).Elem()
+	mdl.FieldByName("UpdatedBy").SetString(cw.GetUsername())
+	return db.DB.Updates(svc.model).Error
 }
 
 // Update Update
-func (s *Base) Update(query interface{}, args ...interface{}) error {
-	return db.DB.Select(query, args...).UpdateColumns(s.model).Error
+func (svc *Base) Update(cw global.IContextWrapper, query interface{}, args ...interface{}) error {
+	mdl := reflect.ValueOf(svc.model).Elem()
+	mdl.FieldByName("UpdatedBy").SetString(cw.GetUsername())
+	return db.DB.Select(query, args...).UpdateColumns(svc.model).Error
 }
 
 // Delete delete from database and destroy the model
-func (s *Base) Delete() error {
-	err := db.DB.Delete(s.model).Error
+func (svc *Base) Delete() error {
+	err := db.DB.Delete(svc.model).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		typ := s.getTypeName()
+		typ := svc.getTypeName()
 		return errs.NotFoundError(typ)
 	}
 
@@ -324,29 +330,29 @@ func (s *Base) Delete() error {
 }
 
 // GetOffset GetOffset
-func (s *Base) GetOffset() (uint64, uint64) {
-	return s.prev, s.next
+func (svc *Base) GetOffset() (uint64, uint64) {
+	return svc.prev, svc.next
 }
 
 // GetPrev GetPrev
-func (s *Base) GetPrev() uint64 {
-	return s.prev
+func (svc *Base) GetPrev() uint64 {
+	return svc.prev
 }
 
 // GetNext GetNext
-func (s *Base) GetNext() uint64 {
-	return s.next
+func (svc *Base) GetNext() uint64 {
+	return svc.next
 }
 
-func (s *Base) getTypeName() string {
-	v := reflect.ValueOf(s.model)
+func (svc *Base) getTypeName() string {
+	v := reflect.ValueOf(svc.model)
 	typ := v.Elem().Type().String()
 	ss := strings.Split(typ, ".")
 	return strings.ToLower(ss[len(ss)-1:][0])
 }
 
-func reverse(s interface{}) {
-	v := reflect.ValueOf(s).Elem()
+func reverse(slc interface{}) {
+	v := reflect.ValueOf(slc).Elem()
 	swap := reflect.Swapper(v.Interface())
 	n := v.Len()
 	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
