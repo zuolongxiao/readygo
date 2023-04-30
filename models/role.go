@@ -23,12 +23,12 @@ type RoleView struct {
 
 // RoleCreate binding
 type RoleCreate struct {
-	Name string `json:"name" binding:"required,max=50"`
+	Name *string `json:"name" binding:"required,min=2,max=50"`
 }
 
 // RoleUpdate binding
 type RoleUpdate struct {
-	Name string `json:"name" binding:"required,max=50"`
+	Name *string `json:"name" binding:"required,min=2,max=50"`
 }
 
 // BeforeSave hook

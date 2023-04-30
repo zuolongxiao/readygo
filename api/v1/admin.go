@@ -78,8 +78,8 @@ func CreateAdmin(c *gin.Context) {
 		return
 	}
 
-	if binding.Password != "" {
-		hashedPassword, err := utils.HashPassword(binding.Password)
+	if *binding.Password != "" {
+		hashedPassword, err := utils.HashPassword(*binding.Password)
 		if err != nil {
 			cw.Respond(errs.InternalServerError(err.Error()), nil)
 		}
@@ -126,8 +126,8 @@ func UpdateAdmin(c *gin.Context) {
 		return
 	}
 
-	if binding.Password != "" {
-		hashedPassword, err := utils.HashPassword(binding.Password)
+	if *binding.Password != "" {
+		hashedPassword, err := utils.HashPassword(*binding.Password)
 		if err != nil {
 			cw.Respond(errs.InternalServerError(err.Error()), nil)
 		}

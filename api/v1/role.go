@@ -316,8 +316,8 @@ func UpdateRolePermission(c *gin.Context) {
 		mdl := models.Authorization{}
 		svc := services.New(&mdl)
 		binding := models.AuthorizationBinding{
-			RoleID:       roleID,
-			PermissionID: permissionID,
+			RoleID:       &roleID,
+			PermissionID: &permissionID,
 		}
 
 		if err := svc.Fill(&binding); err != nil {

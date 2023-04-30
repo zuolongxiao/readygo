@@ -33,26 +33,26 @@ type AdminView struct {
 
 // AdminCreate binding
 type AdminCreate struct {
-	RoleID   uint64 `json:"role_id" binding:"min=0"`
-	Username string `json:"username" binding:"required,alphanum,min=2,max=50"`
-	Password string `json:"password" binding:"required,min=2,max=50"`
-	IsLocked string `json:"is_locked" binding:"required,oneof=N Y"`
+	RoleID   *uint64 `json:"role_id" binding:"required"`
+	Username *string `json:"username" binding:"required,alphanum,min=2,max=50"`
+	Password *string `json:"password" binding:"required,min=2,max=50"`
+	IsLocked *string `json:"is_locked" binding:"required,oneof=N Y"`
 }
 
 // AdminUpdate binding
 type AdminUpdate struct {
-	RoleID   uint64 `json:"role_id" binding:"min=0"`
-	Username string `json:"username" binding:"required,alphanum,min=2,max=50"`
-	Password string `json:"password" binding:"omitempty,min=2,max=50"`
-	IsLocked string `json:"is_locked" binding:"required,oneof=N Y"`
+	RoleID   *uint64 `json:"role_id" binding:"required"`
+	Username *string `json:"username" binding:"required,alphanum,min=2,max=50"`
+	Password *string `json:"password" binding:"required,min=0,max=50"`
+	IsLocked *string `json:"is_locked" binding:"required,oneof=N Y"`
 }
 
 // Auth binding
 type Auth struct {
-	Username    string `json:"username" binding:"required,alphanum,min=2,max=50"`
-	Password    string `json:"password" binding:"required,min=2,max=50"`
-	CaptchaCode string `json:"code" binding:"required,min=2,max=50"`
-	CaptchaID   string `json:"id" binding:"required,min=2,max=50"`
+	Username    *string `json:"username" binding:"required,alphanum,min=2,max=50"`
+	Password    *string `json:"password" binding:"required,min=2,max=50"`
+	CaptchaCode *string `json:"code" binding:"required,min=2,max=50"`
+	CaptchaID   *string `json:"id" binding:"required,min=2,max=50"`
 }
 
 // ProfileView view
@@ -65,9 +65,9 @@ type ProfileView struct {
 
 // ProfileUpdate binding
 type ProfileUpdate struct {
-	Password        string `json:"password" binding:"required,eqfield=PasswordConfirm,min=2,max=50"`
-	PasswordOld     string `json:"password_old" binding:"required,min=2,max=50"`
-	PasswordConfirm string `json:"password_confirm"`
+	Password        *string `json:"password" binding:"required,eqfield=PasswordConfirm,min=2,max=50"`
+	PasswordOld     *string `json:"password_old" binding:"required,min=2,max=50"`
+	PasswordConfirm *string `json:"password_confirm"`
 }
 
 // BeforeSave hook

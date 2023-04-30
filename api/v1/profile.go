@@ -56,7 +56,7 @@ func UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	if !utils.VerifyPassword(mdl.Password, binding.PasswordOld) {
+	if !utils.VerifyPassword(mdl.Password, *binding.PasswordOld) {
 		cw.Respond(errs.ValidationError("incorrect password"), nil)
 		return
 	}
@@ -66,8 +66,8 @@ func UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	if binding.Password != "" {
-		hashedPassword, err := utils.HashPassword(binding.Password)
+	if *binding.Password != "" {
+		hashedPassword, err := utils.HashPassword(*binding.Password)
 		if err != nil {
 			cw.Respond(errs.InternalServerError(err.Error()), nil)
 		}

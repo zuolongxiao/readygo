@@ -27,8 +27,8 @@ type AuthorizationView struct {
 
 // AuthorizationBinding binding
 type AuthorizationBinding struct {
-	RoleID       uint64 `json:"role_id" binding:"min=0"`
-	PermissionID uint64 `json:"permission_id" binding:"min=0"`
+	RoleID       *uint64 `json:"role_id" binding:"required,min=1"`
+	PermissionID *uint64 `json:"permission_id" binding:"required,min=1"`
 }
 
 // AuthorizationPermission model

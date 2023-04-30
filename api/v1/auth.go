@@ -25,7 +25,7 @@ func Auth(c *gin.Context) {
 	}
 
 	if settings.Captcha.Enabled {
-		if !store.CaptchaStore.Verify(au.CaptchaID, au.CaptchaCode, true) {
+		if !store.CaptchaStore.Verify(*au.CaptchaID, *au.CaptchaCode, true) {
 			cw.Respond(errs.ValidationError("invalid captcha code"), nil)
 			return
 		}
@@ -38,7 +38,7 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	if !utils.VerifyPassword(admin.Password, au.Password) {
+	if !utils.VerifyPassword(admin.Password, *au.Password) {
 		cw.Respond(errs.ValidationError("incorrect username or password"), nil)
 		return
 	}
