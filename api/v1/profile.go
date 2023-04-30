@@ -66,14 +66,6 @@ func UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	if *binding.Password != "" {
-		hashedPassword, err := utils.HashPassword(*binding.Password)
-		if err != nil {
-			cw.Respond(errs.InternalServerError(err.Error()), nil)
-		}
-		mdl.Password = hashedPassword
-	}
-
 	if err := svc.Save(cw); err != nil {
 		cw.Respond(err, nil)
 		return

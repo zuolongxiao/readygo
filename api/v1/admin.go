@@ -78,14 +78,6 @@ func CreateAdmin(c *gin.Context) {
 		return
 	}
 
-	if *binding.Password != "" {
-		hashedPassword, err := utils.HashPassword(*binding.Password)
-		if err != nil {
-			cw.Respond(errs.InternalServerError(err.Error()), nil)
-		}
-		mdl.Password = hashedPassword
-	}
-
 	mdl.IPAddr = c.ClientIP()
 	if err := svc.Create(cw); err != nil {
 		cw.Respond(err, nil)
@@ -124,14 +116,6 @@ func UpdateAdmin(c *gin.Context) {
 	if err := svc.Fill(&binding); err != nil {
 		cw.Respond(err, nil)
 		return
-	}
-
-	if *binding.Password != "" {
-		hashedPassword, err := utils.HashPassword(*binding.Password)
-		if err != nil {
-			cw.Respond(errs.InternalServerError(err.Error()), nil)
-		}
-		mdl.Password = hashedPassword
 	}
 
 	if err := svc.Save(cw); err != nil {

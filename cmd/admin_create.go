@@ -56,13 +56,9 @@ func createAdmin(username, password string) error {
 		return errs.ValidationError("password length must be 2-40")
 	}
 
-	hashedPassword, err := utils.HashPassword(password)
-	if err != nil {
-		return err
-	}
 	admin := models.Admin{
 		Username: username,
-		Password: hashedPassword,
+		Password: password,
 	}
 	svc := services.New(&admin)
 

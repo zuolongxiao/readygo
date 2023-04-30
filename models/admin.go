@@ -5,6 +5,7 @@ import (
 
 	"readygo/pkg/errs"
 	"readygo/pkg/global"
+	"readygo/utils"
 
 	"gorm.io/gorm"
 )
@@ -92,6 +93,12 @@ func (mdl *Admin) BeforeSave(tx *gorm.DB) error {
 
 	if mdl.Password == "" {
 		tx.Statement.Omit("password")
+	} else {
+		hashedPassword, err := utils.HashPassword(mdl.Password)
+		if err != nil {
+			return errs.InternalServerError(err.Error())
+		}
+		mdl.Password = hashedPassword
 	}
 
 	return nil
