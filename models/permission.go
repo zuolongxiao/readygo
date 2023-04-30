@@ -35,16 +35,16 @@ type PermissionCreate struct {
 	Title     string `json:"title" binding:"required,max=50"`
 	Group     string `json:"group" binding:"max=50"`
 	Note      string `json:"note" binding:"max=50"`
-	IsEnabled string `json:"is_enabled" binding:"omitempty,oneof=N Y"`
+	IsEnabled string `json:"is_enabled" binding:"required,oneof=N Y"`
 }
 
 // PermissionUpdate binding
 type PermissionUpdate struct {
-	Name      string `json:"name" binding:"max=50"`
-	Title     string `json:"title" binding:"max=50"`
+	Name      string `json:"name" binding:"required,max=50"`
+	Title     string `json:"title" binding:"required,max=50"`
 	Group     string `json:"group" binding:"max=50"`
 	Note      string `json:"note" binding:"max=50"`
-	IsEnabled string `json:"is_enabled" binding:"omitempty,oneof=N Y"`
+	IsEnabled string `json:"is_enabled" binding:"required,oneof=N Y"`
 }
 
 // BeforeSave hook

@@ -28,7 +28,7 @@ type RoleCreate struct {
 
 // RoleUpdate binding
 type RoleUpdate struct {
-	Name string `json:"name" binding:"max=50"`
+	Name string `json:"name" binding:"required,max=50"`
 }
 
 // BeforeSave hook

@@ -36,15 +36,15 @@ type AdminCreate struct {
 	RoleID   uint64 `json:"role_id" binding:"min=0"`
 	Username string `json:"username" binding:"required,alphanum,min=2,max=50"`
 	Password string `json:"password" binding:"required,min=2,max=50"`
-	IsLocked string `json:"is_locked" binding:"omitempty,oneof=N Y"`
+	IsLocked string `json:"is_locked" binding:"required,oneof=N Y"`
 }
 
 // AdminUpdate binding
 type AdminUpdate struct {
 	RoleID   uint64 `json:"role_id" binding:"min=0"`
-	Username string `json:"username" binding:"omitempty,alphanum,min=2,max=50"`
+	Username string `json:"username" binding:"required,alphanum,min=2,max=50"`
 	Password string `json:"password" binding:"omitempty,min=2,max=50"`
-	IsLocked string `json:"is_locked" binding:"omitempty,oneof=N Y"`
+	IsLocked string `json:"is_locked" binding:"required,oneof=N Y"`
 }
 
 // Auth binding
@@ -91,7 +91,7 @@ func (mdl *Admin) BeforeSave(tx *gorm.DB) error {
 	}
 
 	if mdl.Password == "" {
-		tx.Omit("password")
+		tx.Statement.Omit("password")
 	}
 
 	return nil
