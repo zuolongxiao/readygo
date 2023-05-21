@@ -121,7 +121,7 @@ func setupSqlite() error {
 func setupRedis() error {
 	RDB = redis.NewClient(&redis.Options{
 		Addr:     settings.Redis.Addr,
-		Password: settings.Redis.Addr,
+		Password: settings.Redis.Password,
 		DB:       settings.Redis.DB,
 	})
 

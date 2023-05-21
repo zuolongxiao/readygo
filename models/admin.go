@@ -16,7 +16,7 @@ type Admin struct {
 
 	RoleID      uint64       `gorm:"type:uint;index:idx_role;not null"`
 	Username    string       `gorm:"type:string;size:50;index:uk_username,unique;not null"`
-	Password    string       `gorm:"type:char(60);;not null"`
+	Password    string       `gorm:"type:char(60);not null"`
 	IsLocked    string       `gorm:"type:char(1);default:N;not null"`
 	IPAddr      string       `gorm:"type:string;size:100;not null"`
 	LastLoginIP string       `gorm:"type:string;size:100;not null"`

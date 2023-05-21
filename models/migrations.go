@@ -5,4 +5,8 @@ var Migrations = []interface{}{
 	&Authorization{},
 	&Permission{},
 	&Role{},
+	&District{},
+	&Zone{},
+	&School{},
+	&Community{},
 }
