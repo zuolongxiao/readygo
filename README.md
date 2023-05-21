@@ -103,3 +103,32 @@
     curl --request GET 'http://127.0.0.1:9331/api/v1/admins' \
     --header 'Authorization: Bearer <JWT TOKEN>'
     ```
+
+## Docker
+
+```sh
+# build
+docker build -t readygo .
+
+# test
+docker run -it --rm readygo readygo version
+
+# run
+docker run -d --restart always --name readygo -p 9331:9331 \
+-e GIN_MODE=release \
+-e SERVER_HTTPHOST=0.0.0.0 \
+-e SERVER_HTTPPORT=9331 \
+-e JWT_SECRET='' \
+-e DATABASE_TYPE=MySQL \
+-e MYSQL_HOST=10.0.0.5 \
+-e MYSQL_PORT=3306 \
+-e MYSQL_USER=readygo \
+-e MYSQL_PASSWORD='' \
+-e MYSQL_NAME=readygo \
+-e REDIS_ENABLED=1 \
+-e REDIS_ADDR=10.0.0.5:6379 \
+-e REDIS_DB=0 \
+-e CAPTCHA_ENABLED=1 \
+-e CAPTCHA_STORE=Redis \
+readygo readygo serve
+```
